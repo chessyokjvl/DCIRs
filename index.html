@@ -90,40 +90,61 @@
         </div>
 
         <div id="view-dashboard" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="panel-light dark:panel-dark p-6 rounded-xl border-l-4 border-l-amber-500">
-                    <h2 class="text-sm font-medium mb-2">นำเข้าไฟล์ JVL RM (GodReport)</h2>
-                    <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-amber-400 cursor-pointer mb-3">
-                    <button onclick="processFile()" class="w-full py-2 text-xs rounded btn-gold">ประมวลผลไฟล์</button>
-                </div>
-                <div class="panel-light dark:panel-dark p-6 rounded-xl lg:col-span-2 flex flex-col justify-center items-start">
-                    <h2 class="text-sm font-medium mb-3">จัดการข้อมูล (Data Management)</h2>
-                    <div class="flex gap-3">
-                        <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">🔄 รีเฟรชข้อมูลล่าสุด</button>
-                        <button onclick="exportToExcel()" class="px-4 py-2 text-xs rounded bg-green-600 text-white hover:bg-green-700 shadow-lg">📊 Export to Excel</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel-light dark:panel-dark rounded-xl overflow-hidden">
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm whitespace-nowrap">
-                        <thead class="table-header-light dark:table-header-dark text-xs text-slate-600 dark:text-slate-400">
-                            <tr>
-                                <th class="py-3 px-4">เลขที่ใบความเสี่ยง</th>
-                                <th class="py-3 px-4">วันที่เกิดเหตุ</th>
-                                <th class="py-3 px-4">ระดับ</th>
-                                <th class="py-3 px-4">หมวดหมู่ DCIRs</th>
-                                <th class="py-3 px-4 max-w-xs">รายการ</th>
-                                <th class="py-3 px-4 text-center">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="incidentTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/50">
-                            </tbody>
-                    </table>
-                </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="panel-light dark:panel-dark p-6 rounded-xl border-l-4 border-l-amber-500">
+            <h2 class="text-sm font-medium mb-2">นำเข้าไฟล์ JVL RM (GodReport)</h2>
+            <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-amber-400 cursor-pointer mb-3">
+            <button onclick="processFile()" class="w-full py-2 text-xs rounded btn-gold">ประมวลผลไฟล์</button>
+        </div>
+        <div class="panel-light dark:panel-dark p-6 rounded-xl lg:col-span-2 flex flex-col justify-center items-start">
+            <h2 class="text-sm font-medium mb-3">การเชื่อมต่อฐานข้อมูล (Data Connection)</h2>
+            <div class="flex gap-3">
+                <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm">🔄 ดึงข้อมูลล่าสุด</button>
+                <button onclick="exportToExcel()" class="px-4 py-2 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">📊 Export to Excel</button>
             </div>
         </div>
+    </div>
+
+    <div class="panel-light dark:panel-dark p-5 rounded-xl flex flex-wrap items-end gap-5">
+        <div>
+            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ตั้งแต่วันที่ (เกิดเหตุ)</label>
+            <input type="date" id="filterStart" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40">
+        </div>
+        <div>
+            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ถึงวันที่ (เกิดเหตุ)</label>
+            <input type="date" id="filterEnd" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40">
+        </div>
+        <div>
+            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">หมวดหมู่ DCIRs</label>
+            <select id="filterCategory" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-56">
+                <option value="all">แสดงรายการทั้งหมด</option>
+                <option value="dcirs" selected>เฉพาะที่เข้าเกณฑ์รายงานกรม</option>
+            </select>
+        </div>
+        <button onclick="clearFilters()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors h-10 border border-slate-300 dark:border-slate-600">
+            ล้างตัวกรอง
+        </button>
+    </div>
+
+    <div class="panel-light dark:panel-dark rounded-xl overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="table-header-light dark:table-header-dark text-xs text-slate-600 dark:text-slate-400">
+                    <tr>
+                        <th onclick="handleSort('เลขที่ใบความเสี่ยง')" class="py-3 px-4 cursor-pointer hover:text-amber-500">เลขที่อ้างอิง ↕</th>
+                        <th onclick="handleSort('วันที่เกิดเหตุ')" class="py-3 px-4 cursor-pointer hover:text-amber-500">วันที่เกิดเหตุ ↕</th>
+                        <th onclick="handleSort('ระดับ')" class="py-3 px-4 cursor-pointer hover:text-amber-500 text-center">ระดับ ↕</th>
+                        <th onclick="handleSort('DMHC')" class="py-3 px-4 cursor-pointer hover:text-amber-500">หมวดหมู่ DCIRs ↕</th>
+                        <th class="py-3 px-4 max-w-xs">รายการ</th>
+                        <th class="py-3 px-4 text-center">จัดการ</th>
+                    </tr>
+                </thead>
+                <tbody id="incidentTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/50">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
         <div id="view-keyin" class="hidden">
             <form id="manual-form" onsubmit="submitManualForm(event)" class="panel-light dark:panel-dark rounded-xl p-6 md:p-8">
@@ -296,38 +317,135 @@
         function logout() { sessionStorage.removeItem('dcirs_token'); window.location.reload(); }
 
         // Fetch & Render Dashboard
-        async function fetchDashboardData() {
-            try {
-                const res = await fetch(GAS_WEB_APP_URL);
-                const result = await res.json();
-                if (result.status === 'success') {
-                    currentData = result.data; // Save for Export
-                    const tbody = document.getElementById('incidentTableBody');
-                    tbody.innerHTML = '';
-                    
-                    if(result.data.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500">ไม่พบข้อมูล</td></tr>'; return;
-                    }
+        // ตัวแปรเก็บสถานะการ Sort
+let sortCol = 'วันที่เกิดเหตุ';
+let sortAsc = false;
+let allDataCache = []; // เก็บข้อมูลทั้งหมดจาก Server
 
-                    // Sort newest first
-                    [...result.data].reverse().forEach((row, i) => {
-                        let tr = document.createElement('tr');
-                        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30';
-                        tr.innerHTML = `
-                            <td class="py-3 px-4 font-mono text-xs text-amber-500">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
-                            <td class="py-3 px-4 text-xs">${row['วันที่เกิดเหตุ'] || '-'}</td>
-                            <td class="py-3 px-4 text-xs"><span class="px-2 py-1 rounded bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">${row['ระดับ'] || '-'}</span></td>
-                            <td class="py-3 px-4 text-xs">${row['DMHC'] || '-'}</td>
-                            <td class="py-3 px-4 text-xs max-w-[200px] truncate" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
-                            <td class="py-3 px-4 text-center">
-                                <button onclick="generatePDF(${result.data.length - 1 - i})" class="px-2 py-1 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">📄 PDF</button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
-            } catch (err) { console.error("Error loading table", err); }
+// แก้ไขฟังก์ชัน fetchDashboardData เพื่ออัปเดต allDataCache
+async function fetchDashboardData() {
+    try {
+        const res = await fetch(GAS_WEB_APP_URL);
+        const result = await res.json();
+        if (result.status === 'success') {
+            allDataCache = result.data;
+            applyFilters(); // เรียกตัวกรองอัตโนมัติทันที
         }
+    } catch (err) { console.error("Error loading table", err); }
+}
+
+// ฟังก์ชันแปลงวันที่ พ.ศ. (String) เป็น Timestamp ค.ศ. (ตัวเลข) สำหรับการเทียบ Date Range
+function parseThaiDateToTimestamp(thaiDateStr) {
+    if(!thaiDateStr) return 0;
+    let parts = thaiDateStr.replace(/'/g, '').split('/');
+    if(parts.length !== 3) return 0;
+    let d = parseInt(parts[0]);
+    let m = parseInt(parts[1]) - 1; // เดือนใน JS เริ่มที่ 0
+    let y = parseInt(parts[2]) - 543; // แปลงพ.ศ. กลับเป็น ค.ศ.
+    return new Date(y, m, d).getTime();
+}
+
+// ฟังก์ชันทำงานเมื่อกดปุ่ม ล้างตัวกรอง
+function clearFilters() {
+    document.getElementById('filterStart').value = '';
+    document.getElementById('filterEnd').value = '';
+    document.getElementById('filterCategory').value = 'all';
+    applyFilters();
+}
+
+// ฟังก์ชันสำหรับจัดเรียงและกรองข้อมูล
+function applyFilters() {
+    let filtered = [...allDataCache];
+    
+    // 1. กรองตามวันที่ (Date Range)
+    const startDateVal = document.getElementById('filterStart').value;
+    const endDateVal = document.getElementById('filterEnd').value;
+    
+    if (startDateVal || endDateVal) {
+        let startTs = startDateVal ? new Date(startDateVal).getTime() : 0;
+        let endTs = endDateVal ? new Date(endDateVal).getTime() : Infinity;
+        
+        filtered = filtered.filter(row => {
+            let rowTs = parseThaiDateToTimestamp(row['วันที่เกิดเหตุ']);
+            return rowTs >= startTs && rowTs <= endTs;
+        });
+    }
+
+    // 2. กรองตามหมวดหมู่ DCIRs
+    const categoryFilter = document.getElementById('filterCategory').value;
+    if (categoryFilter === 'dcirs') {
+        filtered = filtered.filter(row => row['DMHC'] && !row['DMHC'].includes('อื่นๆ'));
+    }
+
+    // 3. การจัดเรียง (Sorting)
+    filtered.sort((a, b) => {
+        let valA = a[sortCol] || '';
+        let valB = b[sortCol] || '';
+
+        // ถ้าเรียงตามระดับ ให้ฉลาดขึ้นโดยกำหนดน้ำหนัก (I สูงสุด)
+        if (sortCol === 'ระดับ') {
+            const weights = { 'I': 5, 'H': 4, 'G': 3, '5': 2, '4': 1 };
+            valA = weights[valA.toString().toUpperCase()] || 0;
+            valB = weights[valB.toString().toUpperCase()] || 0;
+            return sortAsc ? valA - valB : valB - valA;
+        }
+        
+        // ถ้าเรียงตามวันที่เกิดเหตุ ให้แปลงเป็น Timestamp ก่อนเรียง
+        if (sortCol === 'วันที่เกิดเหตุ') {
+            valA = parseThaiDateToTimestamp(valA);
+            valB = parseThaiDateToTimestamp(valB);
+            return sortAsc ? valA - valB : valB - valA;
+        }
+
+        // การเรียงตัวอักษรปกติ
+        if(valA < valB) return sortAsc ? -1 : 1;
+        if(valA > valB) return sortAsc ? 1 : -1;
+        return 0;
+    });
+
+    currentData = filtered; // บันทึกข้อมูลที่ถูกกรองไว้เผื่อ Export
+    renderTableBody(filtered);
+}
+
+// ฟังก์ชันสลับการจัดเรียงเมื่อคลิกหัวตาราง
+function handleSort(columnName) {
+    if (sortCol === columnName) {
+        sortAsc = !sortAsc; // สลับทิศทาง
+    } else {
+        sortCol = columnName;
+        sortAsc = true; // เปลี่ยนคอลัมน์ให้เริ่มแบบน้อยไปมาก
+    }
+    applyFilters();
+}
+
+// ฟังก์ชันวาดข้อมูลลงตารางแยกออกมาเพื่อความสะอาดของโค้ด
+function renderTableBody(dataArray) {
+    const tbody = document.getElementById('incidentTableBody');
+    tbody.innerHTML = '';
+    
+    if(dataArray.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">ไม่พบข้อมูลที่ตรงกับเงื่อนไขตัวกรอง</td></tr>'; 
+        return;
+    }
+
+    dataArray.forEach((row, i) => {
+        let isDcirs = row['DMHC'] && !row['DMHC'].includes('อื่นๆ');
+        
+        let tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors';
+        tr.innerHTML = `
+            <td class="py-3 px-4 font-mono text-xs font-medium text-amber-600 dark:text-amber-500">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
+            <td class="py-3 px-4 text-xs text-slate-700 dark:text-slate-300">${row['วันที่เกิดเหตุ'] || '-'}</td>
+            <td class="py-3 px-4 text-xs text-center"><span class="px-2 py-0.5 rounded font-bold bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">${row['ระดับ'] || '-'}</span></td>
+            <td class="py-3 px-4 text-xs font-medium ${isDcirs ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">${row['DMHC'] || '-'}</td>
+            <td class="py-3 px-4 text-xs max-w-[200px] truncate text-slate-600 dark:text-slate-400" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
+            <td class="py-3 px-4 text-center">
+                <button onclick="generatePDF(${i})" class="px-3 py-1.5 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm font-medium">📄 ออกฟอร์ม PDF</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
 
         // Export Excel using SheetJS
         function exportToExcel() {
