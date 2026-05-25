@@ -43,7 +43,7 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 4px; }
         
-        /* PDF Template */
+        /* PDF Template Wrap */
         #pdf-wrapper { display: none; }
     </style>
 </head>
@@ -224,46 +224,57 @@
     </div>
 
     <div id="pdf-wrapper">
-        <div id="pdf-content" style="width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;">
-            <div style="text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 20px;">
-                แบบรายงานเหตุการณ์สำคัญเร่งด่วน (Sentinel Events)<br>
-                <span style="font-size: 14px; font-weight: normal;">Director Critical Information Requirements: Department of Mental Health</span>
+        <div id="pdf-content" style="width: 760px; padding: 30px; background: white; color: black; font-family: 'Prompt', sans-serif; line-height: 1.6; font-size: 14px;">
+            <div style="text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 5px;">
+                แบบรายงานเหตุการณ์สำคัญเร่งด่วน (Sentinel Events)
             </div>
-            <div style="font-size: 14px; margin-bottom: 20px; display: flex; justify-content: space-between;">
-                <span>วันที่รายงาน: <span id="pdf-date" style="border-bottom: 1px dotted black;">.....................</span></span>
-                <span>เวลา: <span id="pdf-time" style="border-bottom: 1px dotted black;">.................</span> น.</span>
-                <span>เลขที่อ้างอิง: <span id="pdf-id" style="border-bottom: 1px dotted black;">.................</span></span>
+            <div style="text-align: center; font-size: 13px; margin-bottom: 25px; color: #333;">
+                Director Critical Information Requirements: Department of Mental Health (DCIRs: DMH)
             </div>
             
-            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 1: ประเภทของเหตุการณ์</div>
-            <div style="font-size: 14px; margin-bottom: 20px;">
-                [ x ] <span id="pdf-category" style="font-weight: bold; text-decoration: underline;">......................................................</span><br>
-                <span style="color: #666; font-size: 12px; margin-top: 5px; display: inline-block;">* ประมวลผลและจัดหมวดหมู่จากระบบอัตโนมัติ</span>
+            <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap;">
+                <div style="width: 50%;"><b>วันที่รายงาน:</b> <span id="pdf-report-date" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 65%;"></span></div>
+                <div style="width: 50%;"><b>เวลา:</b> <span id="pdf-report-time" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 40%;"></span> น.</div>
             </div>
-
-            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 2: รายละเอียดเหตุการณ์</div>
-            <div style="font-size: 14px; margin-bottom: 20px; line-height: 1.8;">
-                <b>สถานที่เกิดเหตุ:</b> <span id="pdf-location">.......................</span><br>
-                <b>รายการความเสี่ยง (ระดับ <span id="pdf-level">...</span>):</b> <span id="pdf-item">.......................</span><br>
-                <b>รายละเอียด:</b> <span id="pdf-details">.......................</span><br>
-                <b>การแก้ไขปัญหาเบื้องต้น:</b> <span id="pdf-fix">.......................</span>
-            </div>
-
-            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 6: สิ่งที่ต้องการขอรับการสนับสนุนจากผู้บริหาร</div>
-            <div style="font-size: 14px;">
-                [ x ] เพื่อทราบ <br>
-                [   ] พิจารณาสั่งการเพิ่มเติม
+            <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap;">
+                <div style="width: 100%; margin-bottom: 12px;"><b>หน่วยงาน:</b> <span id="pdf-report-dept" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 83%;"></span></div>
+                <div style="width: 40%;"><b>ผู้รายงาน:</b> <span id="pdf-reporter-name" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 70%;"></span></div>
+                <div style="width: 35%;"><b>ตำแหน่ง:</b> <span id="pdf-reporter-pos" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 70%;"></span></div>
+                <div style="width: 25%;"><b>โทรศัพท์:</b> <span id="pdf-reporter-phone" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 60%;"></span></div>
             </div>
             
-            <div style="margin-top: 50px; text-align: right; font-size: 14px;">
-                .......................................................<br>
-                พิมพ์ออกจากระบบ DCIRs
+            <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 1: ประเภทของเหตุการณ์</div>
+            <div style="margin-bottom: 25px; padding-left: 10px;">
+                <div style="font-size: 15px; font-weight: 500; color: #1a202c;">
+                    [ ✓ ] <span id="pdf-category-text"></span>
+                </div>
+                <div style="font-size: 11px; color: #718096; margin-top: 4px; font-style: italic;">
+                    เลขที่อ้างอิงอุบัติการณ์ความเสี่ยง: <span id="pdf-risk-id"></span>
+                </div>
+            </div>
+
+            <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 2: รายละเอียดเหตุการณ์</div>
+            <div style="margin-bottom: 25px; padding-left: 10px; space-y-3;">
+                <div style="margin-bottom: 10px;">
+                    <b>วัน/เวลาที่เกิดเหตุ:</b> <span id="pdf-incident-datetime" style="border-bottom: 1px dashed #444; padding-left: 5px;"></span>
+                </div>
+                <div style="margin-bottom: 12px;">
+                    <b>สถานที่เกิดเหตุ:</b> <span id="pdf-location" style="border-bottom: 1px dashed #444; padding-left: 5px;"></span>
+                </div>
+                <div style="margin-bottom: 5px;"><b>รายละเอียดเหตุการณ์และการแก้ไขปัญหาเบื้องต้น (ไม่ระบุข้อมูลส่วนบุคคล):</b></div>
+                <div id="pdf-details-combined" style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 4px; min-height: 120px; font-size: 13px; line-height: 1.6;"></div>
+            </div>
+
+            <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 6: สิ่งที่ต้องการขอรับการสนับสนุนจากผู้บริหาร</div>
+            <div style="padding-left: 10px; font-size: 14px; display: flex; gap: 30px;">
+                <div>[ ✓ ] เพื่อทราบ</div>
+                <div>[ &nbsp; ] พิจารณาสั่งการเพิ่มเติม</div>
             </div>
         </div>
     </div>
 
     <script>
-        // *** วาง URL ของ Google Apps Script ที่ Deploy เสร็จแล้ว ตรงนี้ครับ ***
+        // บันทึก URL หลังบ้านเว็บบอร์ดของคุณ
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyF9h6ZlUuVRY3bn50cHwW-nnavH2eWQZp_Jd4y7T-YXgd3QtLWPLO7HVtBeZbwbaVBig/exec';
         
         let authToken = sessionStorage.getItem('dcirs_token');
@@ -301,16 +312,17 @@
             }
         };
 
-        // UI & Login
+        // Navigation
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'text-amber-600'));
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-keyin').classList.add('hidden');
             document.getElementById(`tab-${tabName}`).classList.add('active');
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            if(tabName === 'dashboard') applyFilters(); // Refresh view
+            if(tabName === 'dashboard') applyFilters();
         }
 
+        // Auth
         async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
@@ -327,11 +339,11 @@
                     document.getElementById('main-app').classList.remove('hidden');
                     fetchDashboardData();
                 } else { Swal.fire('ล้มเหลว', result.message, 'error'); }
-            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server (ตรวจสอบ URL)', 'error'); }
+            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server ได้', 'error'); }
         }
         function logout() { sessionStorage.removeItem('dcirs_token'); window.location.reload(); }
 
-        // Fetch & Sort & Filter Data
+        // Load & Sort & Filter Data
         async function fetchDashboardData() {
             try {
                 const res = await fetch(GAS_WEB_APP_URL);
@@ -347,10 +359,7 @@
             if(!thaiDateStr) return 0;
             let parts = thaiDateStr.replace(/'/g, '').split('/');
             if(parts.length !== 3) return 0;
-            let d = parseInt(parts[0]);
-            let m = parseInt(parts[1]) - 1; 
-            let y = parseInt(parts[2]) - 543; 
-            return new Date(y, m, d).getTime();
+            return new Date(parseInt(parts[2]) - 543, parseInt(parts[1]) - 1, parseInt(parts[0])).getTime();
         }
 
         function clearFilters() {
@@ -423,14 +432,14 @@
                     <td class="py-3 px-4 text-xs font-medium ${isDcirs ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">${row['DMHC'] || '-'}</td>
                     <td class="py-3 px-4 text-xs max-w-[200px] truncate" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
                     <td class="py-3 px-4 text-center">
-                        <button onclick="generatePDF(${index})" class="px-3 py-1.5 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm">📄 PDF</button>
+                        <button onclick="generatePDF(${index})" class="px-3 py-1.5 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm font-medium">📄 ออกฟอร์ม PDF</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        // Export Actions
+        // Export To Excel
         function exportToExcel() {
             if(currentData.length === 0) return Swal.fire('ไม่มีข้อมูล', 'ไม่พบข้อมูลสำหรับส่งออก', 'info');
             const ws = XLSX.utils.json_to_sheet(currentData);
@@ -439,27 +448,90 @@
             XLSX.writeFile(wb, "DCIRs_Report.xlsx");
         }
 
-        function generatePDF(index) {
-            const rowData = currentData[index];
-            document.getElementById('pdf-date').innerText = rowData['วันที่เกิดเหตุ'] || '-';
-            document.getElementById('pdf-time').innerText = rowData['เวลา'] || '-';
-            document.getElementById('pdf-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
-            document.getElementById('pdf-category').innerText = rowData['DMHC'] || 'อื่นๆ';
-            document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
-            document.getElementById('pdf-level').innerText = rowData['ระดับ'] || '-';
-            document.getElementById('pdf-item').innerText = rowData['รายการ'] || '-';
-            document.getElementById('pdf-details').innerText = rowData['รายละเอียด'] || '-';
-            document.getElementById('pdf-fix').innerText = rowData['การแก้ไขเบื้องต้น'] || '-';
+        // Thai Long Date Formatter
+        function getThaiLongDate(dateObj) {
+            const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+            return `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
+        }
 
+        // ================= NEW EXPORT PDF SYSTEM =================
+        async function generatePDF(index) {
+            const rowData = currentData[index];
+
+            // 1. หน้าต่างกรอกข้อมูลผู้รายงานแบบเร่งด่วนก่อนพิมพ์
+            const { value: reporterForm } = await Swal.fire({
+                title: 'ข้อมูลผู้รายงานอุบัติการณ์ความเสี่ยง',
+                html: `
+                    <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">ชื่อ-นามสกุล ผู้รายงาน</div>
+                    <input id="swal-rep-name" class="swal2-input" style="margin:0 0 12px 0; width:90%; height:38px; font-size:14px;" placeholder="ระบุชื่อผู้รายงาน">
+                    <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">ตำแหน่ง</div>
+                    <input id="swal-rep-pos" class="swal2-input" style="margin:0 0 12px 0; width:90%; height:38px; font-size:14px;" placeholder="ระบุตำแหน่งงาน">
+                    <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">เบอร์โทรศัพท์ติดต่อ</div>
+                    <input id="swal-rep-phone" class="swal2-input" style="margin:0 0 4px 0; width:90%; height:38px; font-size:14px;" placeholder="เบอร์ภายใน หรือเบอร์มือถือ">
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'พิมพ์รายงาน PDF',
+                cancelButtonText: 'ยกเลิก',
+                preConfirm: () => {
+                    return {
+                        name: document.getElementById('swal-rep-name').value.trim() || '...........................................',
+                        pos: document.getElementById('swal-rep-pos').value.trim() || '...........................................',
+                        phone: document.getElementById('swal-rep-phone').value.trim() || '...........................................'
+                    }
+                }
+            });
+
+            if (!reporterForm) return; // กดยกเลิก
+
+            // 2. ประมวลผลเวลาส่งออก (Timestamp ปัจจุบัน ณ วินาทีที่กด)
+            const now = new Date();
+            const thaiLongDate = getThaiLongDate(now);
+            const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+
+            // 3. แนบค่าลงในแบบฟอร์ม PDF
+            document.getElementById('pdf-report-date').innerText = thaiLongDate;
+            document.getElementById('pdf-report-time').innerText = currentTimeStr;
+            document.getElementById('pdf-report-dept').innerText = 'โรงพยาบาลจิตเวชเลยราชนครินทร์';
+            
+            document.getElementById('pdf-reporter-name').innerText = reporterForm.name;
+            document.getElementById('pdf-reporter-pos').innerText = reporterForm.pos;
+            document.getElementById('pdf-reporter-phone').innerText = reporterForm.phone;
+
+            // ส่วนรายละเอียดอุบัติการณ์
+            let dateClean = (rowData['วันที่เกิดเหตุ'] || '-').replace(/'/g, '');
+            let timeClean = rowData['เวลา'] || '';
+            document.getElementById('pdf-incident-datetime').innerText = `${dateClean} เวลา ${timeClean} น.`;
+            document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
+            document.getElementById('pdf-risk-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
+            document.getElementById('pdf-category-text').innerText = rowData['DMHC'] || 'อื่นๆ (ไม่ตรงตามเงื่อนไขกรม)';
+
+            // เนื้อความความเสี่ยงหลักและการแก้ไขปัญหา
+            let detailTxt = rowData['รายละเอียด'] || 'ไม่มีข้อมูลรายละเอียด';
+            let fixTxt = rowData['การแก้ไขเบื้องต้น'] || 'ไม่มีข้อมูลการแก้ไขเบื้องต้น';
+            document.getElementById('pdf-details-combined').innerText = `รายละเอียดเหตุการณ์ความเสี่ยง (ระดับ ${rowData['ระดับ'] || '-'}):\n${detailTxt}\n\nการแก้ไขปัญหาเบื้องต้น:\n${fixTxt}`;
+
+            // 4. สั่ง Render HTML เป็น PDF ทันที
             const element = document.getElementById('pdf-content');
             document.getElementById('pdf-wrapper').style.display = 'block';
 
-            const opt = { margin: 10, filename: `DCIRs_${rowData['เลขที่ใบความเสี่ยง']}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-            Swal.fire({ title: 'กำลังสร้าง PDF...', timer: 1500, didOpen: () => Swal.showLoading() });
-            html2pdf().set(opt).from(element).save().then(() => { document.getElementById('pdf-wrapper').style.display = 'none'; });
+            const opt = { 
+                margin: 12, 
+                filename: `DCIRs_Report_${rowData['เลขที่ใบความเสี่ยง']}.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2.5, useCORS: true }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
+            
+            Swal.fire({ title: 'กำลังเขียนไฟล์ PDF...', didOpen: () => Swal.showLoading() });
+            
+            html2pdf().set(opt).from(element).save().then(() => { 
+                document.getElementById('pdf-wrapper').style.display = 'none';
+                Swal.close();
+            });
         }
 
-        // File Upload Upsert
+        // File Ingestion
         async function processFile() {
             const fileInput = document.getElementById('fileUpload');
             if (!fileInput.files.length) return Swal.fire('แจ้งเตือน', 'กรุณาเลือกไฟล์', 'warning');
@@ -531,7 +603,7 @@
                     let opt = document.createElement('option'); opt.value = item; opt.innerHTML = item;
                     l3Select.appendChild(opt);
                 });
-            } else { checkOtherOption(); } // ถ้าไม่มี L3 ให้เช็คเลยว่าต้องแสดงช่องอื่นๆไหม (เผื่อกรณีดัดแปลงอนาคต)
+            } else { checkOtherOption(); }
         }
 
         function checkOtherOption() {
@@ -546,7 +618,6 @@
 
         async function submitManualForm(e) {
             e.preventDefault();
-            
             let finalDcirs = "";
             const l1 = document.getElementById('m_level1').value;
             const l2 = document.getElementById('m_level2').value;
@@ -554,7 +625,6 @@
             const otherText = document.getElementById('m_other_specify').value.trim();
 
             if (!l1 || !l2) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุหมวดหมู่ DCIRs ให้ครบถ้วน', 'warning');
-            
             if (l3) { finalDcirs = (l3 === 'อื่นๆ (ระบุ)' && otherText) ? `อื่นๆ (${otherText})` : l3; } 
             else { finalDcirs = l2; }
 
@@ -577,8 +647,8 @@
                 if (result.status === 'success') {
                     Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
                     document.getElementById('manual-form').reset();
-                    updateLevel2(); // รีเซ็ต Dropdown
-                    fetchDashboardData(); // อัปเดตข้อมูลเบื้องหลัง
+                    updateLevel2();
+                    fetchDashboardData();
                 } else { Swal.fire('Error', result.message, 'error'); }
             } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server', 'error'); }
         }
