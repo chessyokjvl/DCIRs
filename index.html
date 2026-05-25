@@ -19,21 +19,18 @@
     <style>
         body { transition: background-color 0.3s, color 0.3s; }
         
-        /* Light Theme */
         .bg-light-main { background-color: #f1f5f9; color: #1e293b; }
         .panel-light { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
         .input-light { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
         .input-light:focus { border-color: #d97706; box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2); outline: none; }
         .table-header-light { background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; }
         
-        /* Dark Theme */
         .dark .bg-dark-main { background: linear-gradient(135deg, #090d16 0%, #111827 100%); color: #f1f5f9; }
         .dark .panel-dark { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.7); }
         .dark .input-dark { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(251, 191, 36, 0.2); color: white; }
         .dark .input-dark:focus { border-color: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.25); outline: none; }
         .dark .table-header-dark { background-color: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; }
         
-        /* Components */
         .btn-gold { background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%); color: #ffffff; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
         .dark .btn-gold { color: #0f172a; font-weight: 600; }
@@ -43,7 +40,6 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 4px; }
         
-        /* PDF Template Wrap */
         #pdf-wrapper { display: none; }
     </style>
 </head>
@@ -145,7 +141,6 @@
         <div id="view-keyin" class="hidden">
             <form id="manual-form" onsubmit="submitManualForm(event)" class="panel-light dark:panel-dark rounded-xl p-6 md:p-8">
                 <h2 class="text-lg font-semibold mb-6 text-amber-600 dark:text-amber-400 border-b border-slate-200 dark:border-slate-700 pb-2">บันทึกข้อมูล DCIRs (Manual Key-in)</h2>
-                
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                     <div>
                         <label class="block text-xs font-medium mb-1">วันที่รายงาน / วันที่เกิดเหตุ</label>
@@ -202,10 +197,9 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="space-y-4 mb-6">
                     <div>
-                        <label class="block text-xs font-medium mb-1">รายการเหตุการณ์สั้นๆ (จากระบบ JVL RM ถ้ามี)</label>
+                        <label class="block text-xs font-medium mb-1">รายการเหตุการณ์สั้นๆ</label>
                         <input type="text" id="m_itemText" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
                     <div>
@@ -217,7 +211,6 @@
                         <textarea id="m_fix" rows="2" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300"></textarea>
                     </div>
                 </div>
-
                 <button type="submit" class="w-full py-3 rounded-lg btn-gold text-sm tracking-wide shadow-lg">บันทึกข้อมูลเข้าสู่ฐานระบบ</button>
             </form>
         </div>
@@ -232,16 +225,35 @@
                 Director Critical Information Requirements: Department of Mental Health (DCIRs: DMH)
             </div>
             
-            <div style="margin-bottom: 12px; display: flex; flex-wrap: wrap;">
-                <div style="width: 50%;"><b>วันที่รายงาน:</b> <span id="pdf-report-date" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 65%;"></span></div>
-                <div style="width: 50%;"><b>เวลา:</b> <span id="pdf-report-time" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 40%;"></span> น.</div>
-            </div>
-            <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap;">
-                <div style="width: 100%; margin-bottom: 12px;"><b>หน่วยงาน:</b> <span id="pdf-report-dept" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 83%;"></span></div>
-                <div style="width: 40%;"><b>ผู้รายงาน:</b> <span id="pdf-reporter-name" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 70%;"></span></div>
-                <div style="width: 35%;"><b>ตำแหน่ง:</b> <span id="pdf-reporter-pos" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 70%;"></span></div>
-                <div style="width: 25%;"><b>โทรศัพท์:</b> <span id="pdf-reporter-phone" style="border-bottom: 1px dashed #444; padding-left: 5px; display: inline-block; width: 60%;"></span></div>
-            </div>
+            <table style="width: 100%; font-size: 14px; margin-bottom: 20px; border: none; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 60%; padding-bottom: 12px; white-space: nowrap;">
+                        <b>วันที่รายงาน:</b> <span id="pdf-report-date" style="border-bottom: 1px dashed #444; display: inline-block; width: 75%; padding-left: 5px;"></span>
+                    </td>
+                    <td style="width: 40%; padding-bottom: 12px; white-space: nowrap;">
+                        <b>เวลา:</b> <span id="pdf-report-time" style="border-bottom: 1px dashed #444; display: inline-block; width: 50%; padding-left: 5px;"></span> น.
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="padding-bottom: 12px; white-space: nowrap;">
+                        <b>หน่วยงาน:</b> <span id="pdf-report-dept" style="border-bottom: 1px dashed #444; display: inline-block; width: 88%; padding-left: 5px;"></span>
+                    </td>
+                </tr>
+            </table>
+            
+            <table style="width: 100%; font-size: 14px; margin-bottom: 25px; border: none; border-collapse: collapse;">
+                <tr>
+                    <td style="width: 40%; white-space: nowrap; padding-right: 10px;">
+                        <b>ผู้รายงาน:</b> <span id="pdf-reporter-name" style="border-bottom: 1px dashed #444; display: inline-block; width: 70%; padding-left: 5px;"></span>
+                    </td>
+                    <td style="width: 35%; white-space: nowrap; padding-right: 10px;">
+                        <b>ตำแหน่ง:</b> <span id="pdf-reporter-pos" style="border-bottom: 1px dashed #444; display: inline-block; width: 75%; padding-left: 5px;"></span>
+                    </td>
+                    <td style="width: 25%; white-space: nowrap;">
+                        <b>โทรศัพท์:</b> <span id="pdf-reporter-phone" style="border-bottom: 1px dashed #444; display: inline-block; width: 60%; padding-left: 5px;"></span>
+                    </td>
+                </tr>
+            </table>
             
             <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 1: ประเภทของเหตุการณ์</div>
             <div style="margin-bottom: 25px; padding-left: 10px;">
@@ -254,15 +266,15 @@
             </div>
 
             <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 2: รายละเอียดเหตุการณ์</div>
-            <div style="margin-bottom: 25px; padding-left: 10px; space-y-3;">
+            <div style="margin-bottom: 25px; padding-left: 10px;">
                 <div style="margin-bottom: 10px;">
-                    <b>วัน/เวลาที่เกิดเหตุ:</b> <span id="pdf-incident-datetime" style="border-bottom: 1px dashed #444; padding-left: 5px;"></span>
+                    <b>วัน/เวลาที่เกิดเหตุ:</b> <span id="pdf-incident-datetime" style="border-bottom: 1px dashed #444; padding-left: 5px; padding-right: 20px;"></span>
                 </div>
-                <div style="margin-bottom: 12px;">
-                    <b>สถานที่เกิดเหตุ:</b> <span id="pdf-location" style="border-bottom: 1px dashed #444; padding-left: 5px;"></span>
+                <div style="margin-bottom: 15px;">
+                    <b>สถานที่เกิดเหตุ:</b> <span id="pdf-location" style="border-bottom: 1px dashed #444; padding-left: 5px; padding-right: 20px;"></span>
                 </div>
                 <div style="margin-bottom: 5px;"><b>รายละเอียดเหตุการณ์และการแก้ไขปัญหาเบื้องต้น (ไม่ระบุข้อมูลส่วนบุคคล):</b></div>
-                <div id="pdf-details-combined" style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px; border-radius: 4px; min-height: 120px; font-size: 13px; line-height: 1.6;"></div>
+                <div id="pdf-details-combined" style="white-space: pre-wrap; background: #f8fafc; border: 1px solid #cbd5e1; padding: 15px; border-radius: 4px; min-height: 120px; font-size: 14px; line-height: 1.6;"></div>
             </div>
 
             <div style="font-weight: bold; font-size: 15px; margin-bottom: 10px; background: #e2e8f0; padding: 6px 10px; border-radius: 4px;">ส่วนที่ 6: สิ่งที่ต้องการขอรับการสนับสนุนจากผู้บริหาร</div>
@@ -274,7 +286,7 @@
     </div>
 
     <script>
-        // บันทึก URL หลังบ้านเว็บบอร์ดของคุณ
+        // *** วาง URL ของ Google Apps Script ที่ Deploy เสร็จแล้ว ตรงนี้ครับ ***
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyF9h6ZlUuVRY3bn50cHwW-nnavH2eWQZp_Jd4y7T-YXgd3QtLWPLO7HVtBeZbwbaVBig/exec';
         
         let authToken = sessionStorage.getItem('dcirs_token');
@@ -283,7 +295,6 @@
         let sortCol = 'วันที่เกิดเหตุ';
         let sortAsc = false;
 
-        // Theme Setup
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('dark');
@@ -293,17 +304,13 @@
         }
         function updateThemeIcon(isDark) {
             const icon = document.getElementById('theme-icon');
-            if(isDark) {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
-            } else {
-                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
-            }
+            if(isDark) { icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>'; } 
+            else { icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>'; }
         }
 
         window.onload = () => {
             if (localStorage.getItem('theme') === 'dark') {
-                document.documentElement.classList.add('dark');
-                updateThemeIcon(true);
+                document.documentElement.classList.add('dark'); updateThemeIcon(true);
             }
             if (authToken) {
                 document.getElementById('login-screen').classList.add('hidden');
@@ -312,7 +319,6 @@
             }
         };
 
-        // Navigation
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'text-amber-600'));
             document.getElementById('view-dashboard').classList.add('hidden');
@@ -322,7 +328,6 @@
             if(tabName === 'dashboard') applyFilters();
         }
 
-        // Auth
         async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
@@ -343,7 +348,6 @@
         }
         function logout() { sessionStorage.removeItem('dcirs_token'); window.location.reload(); }
 
-        // Load & Sort & Filter Data
         async function fetchDashboardData() {
             try {
                 const res = await fetch(GAS_WEB_APP_URL);
@@ -410,8 +414,7 @@
         }
 
         function handleSort(colName) {
-            if (sortCol === colName) { sortAsc = !sortAsc; } 
-            else { sortCol = colName; sortAsc = true; }
+            if (sortCol === colName) { sortAsc = !sortAsc; } else { sortCol = colName; sortAsc = true; }
             applyFilters();
         }
 
@@ -419,7 +422,7 @@
             const tbody = document.getElementById('incidentTableBody');
             tbody.innerHTML = '';
             if(dataArray.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</td></tr>'; return;
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">ไม่พบข้อมูล</td></tr>'; return;
             }
             dataArray.forEach((row, index) => {
                 let isDcirs = row['DMHC'] && !row['DMHC'].includes('อื่นๆ');
@@ -439,7 +442,6 @@
             });
         }
 
-        // Export To Excel
         function exportToExcel() {
             if(currentData.length === 0) return Swal.fire('ไม่มีข้อมูล', 'ไม่พบข้อมูลสำหรับส่งออก', 'info');
             const ws = XLSX.utils.json_to_sheet(currentData);
@@ -448,26 +450,25 @@
             XLSX.writeFile(wb, "DCIRs_Report.xlsx");
         }
 
-        // Thai Long Date Formatter
+        // --- PDF Generation System ---
         function getThaiLongDate(dateObj) {
             const months = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
             return `${dateObj.getDate()} ${months[dateObj.getMonth()]} ${dateObj.getFullYear() + 543}`;
         }
 
-        // ================= NEW EXPORT PDF SYSTEM =================
         async function generatePDF(index) {
             const rowData = currentData[index];
 
-            // 1. หน้าต่างกรอกข้อมูลผู้รายงานแบบเร่งด่วนก่อนพิมพ์
+            // ให้ผู้ใช้งานคีย์ข้อมูลสดก่อน Export
             const { value: reporterForm } = await Swal.fire({
-                title: 'ข้อมูลผู้รายงานอุบัติการณ์ความเสี่ยง',
+                title: 'ข้อมูลผู้รายงาน (ก่อนพิมพ์ PDF)',
                 html: `
                     <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">ชื่อ-นามสกุล ผู้รายงาน</div>
                     <input id="swal-rep-name" class="swal2-input" style="margin:0 0 12px 0; width:90%; height:38px; font-size:14px;" placeholder="ระบุชื่อผู้รายงาน">
                     <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">ตำแหน่ง</div>
                     <input id="swal-rep-pos" class="swal2-input" style="margin:0 0 12px 0; width:90%; height:38px; font-size:14px;" placeholder="ระบุตำแหน่งงาน">
                     <div style="text-align:left; font-size:13px; margin-bottom:4px; color:#555;">เบอร์โทรศัพท์ติดต่อ</div>
-                    <input id="swal-rep-phone" class="swal2-input" style="margin:0 0 4px 0; width:90%; height:38px; font-size:14px;" placeholder="เบอร์ภายใน หรือเบอร์มือถือ">
+                    <input id="swal-rep-phone" class="swal2-input" style="margin:0 0 4px 0; width:90%; height:38px; font-size:14px;" placeholder="เบอร์ภายใน หรือมือถือ">
                 `,
                 focusConfirm: false,
                 showCancelButton: true,
@@ -482,36 +483,34 @@
                 }
             });
 
-            if (!reporterForm) return; // กดยกเลิก
+            if (!reporterForm) return;
 
-            // 2. ประมวลผลเวลาส่งออก (Timestamp ปัจจุบัน ณ วินาทีที่กด)
             const now = new Date();
-            const thaiLongDate = getThaiLongDate(now);
-            const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-
-            // 3. แนบค่าลงในแบบฟอร์ม PDF
-            document.getElementById('pdf-report-date').innerText = thaiLongDate;
-            document.getElementById('pdf-report-time').innerText = currentTimeStr;
+            
+            document.getElementById('pdf-report-date').innerText = getThaiLongDate(now);
+            document.getElementById('pdf-report-time').innerText = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
             document.getElementById('pdf-report-dept').innerText = 'โรงพยาบาลจิตเวชเลยราชนครินทร์';
             
             document.getElementById('pdf-reporter-name').innerText = reporterForm.name;
             document.getElementById('pdf-reporter-pos').innerText = reporterForm.pos;
             document.getElementById('pdf-reporter-phone').innerText = reporterForm.phone;
 
-            // ส่วนรายละเอียดอุบัติการณ์
             let dateClean = (rowData['วันที่เกิดเหตุ'] || '-').replace(/'/g, '');
-            let timeClean = rowData['เวลา'] || '';
-            document.getElementById('pdf-incident-datetime').innerText = `${dateClean} เวลา ${timeClean} น.`;
+            let timeClean = rowData['เวลา'] ? rowData['เวลา'].toString().trim() : '';
+            
+            // ล้างค่า 1899 ถ้ามีหลงเหลืออยู่
+            if(timeClean === '30/12/1899' || timeClean.includes('1899')) { timeClean = ''; }
+            let timeStr = timeClean ? ` เวลา ${timeClean} น.` : '';
+
+            document.getElementById('pdf-incident-datetime').innerText = `${dateClean}${timeStr}`;
             document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
             document.getElementById('pdf-risk-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
             document.getElementById('pdf-category-text').innerText = rowData['DMHC'] || 'อื่นๆ (ไม่ตรงตามเงื่อนไขกรม)';
 
-            // เนื้อความความเสี่ยงหลักและการแก้ไขปัญหา
-            let detailTxt = rowData['รายละเอียด'] || 'ไม่มีข้อมูลรายละเอียด';
-            let fixTxt = rowData['การแก้ไขเบื้องต้น'] || 'ไม่มีข้อมูลการแก้ไขเบื้องต้น';
-            document.getElementById('pdf-details-combined').innerText = `รายละเอียดเหตุการณ์ความเสี่ยง (ระดับ ${rowData['ระดับ'] || '-'}):\n${detailTxt}\n\nการแก้ไขปัญหาเบื้องต้น:\n${fixTxt}`;
+            let detailTxt = rowData['รายละเอียด'] || '-';
+            let fixTxt = rowData['การแก้ไขเบื้องต้น'] || '-';
+            document.getElementById('pdf-details-combined').innerText = `[ รายละเอียดเหตุการณ์ความเสี่ยง ระดับ ${rowData['ระดับ'] || '-'} ]\n${detailTxt}\n\n[ การแก้ไขปัญหาเบื้องต้น ]\n${fixTxt}`;
 
-            // 4. สั่ง Render HTML เป็น PDF ทันที
             const element = document.getElementById('pdf-content');
             document.getElementById('pdf-wrapper').style.display = 'block';
 
@@ -524,7 +523,6 @@
             };
             
             Swal.fire({ title: 'กำลังเขียนไฟล์ PDF...', didOpen: () => Swal.showLoading() });
-            
             html2pdf().set(opt).from(element).save().then(() => { 
                 document.getElementById('pdf-wrapper').style.display = 'none';
                 Swal.close();
@@ -532,6 +530,20 @@
         }
 
         // File Ingestion
+        function cleanExcelTime(val) {
+            if (!val) return '';
+            if (typeof val === 'number' && val >= 0 && val < 1) {
+                let totalMin = Math.round(val * 24 * 60);
+                return `${Math.floor(totalMin / 60).toString().padStart(2, '0')}:${(totalMin % 60).toString().padStart(2, '0')}`;
+            }
+            if (typeof val === 'string' && val.includes('1899')) {
+               let match = val.match(/(\d{1,2}:\d{2})/);
+               if(match) return match[1];
+               return '';
+            }
+            return val.toString();
+        }
+
         async function processFile() {
             const fileInput = document.getElementById('fileUpload');
             if (!fileInput.files.length) return Swal.fire('แจ้งเตือน', 'กรุณาเลือกไฟล์', 'warning');
@@ -541,7 +553,10 @@
                 const workbook = XLSX.read(data, {type: 'array'});
                 const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 const targetSeverities = ['G', 'H', 'I', '4', '5'];
-                const filteredData = rawData.filter(r => targetSeverities.includes(r['ระดับ']?.toString().toUpperCase().trim()));
+                
+                const filteredData = rawData
+                    .filter(r => targetSeverities.includes(r['ระดับ']?.toString().toUpperCase().trim()))
+                    .map(r => { r['เวลา'] = cleanExcelTime(r['เวลา']); return r; }); // ล้างเวลาเพี้ยนก่อนส่ง
 
                 if (filteredData.length === 0) return Swal.fire('Info', 'ไม่มีข้อมูลระดับ G,H,I,4,5', 'info');
 
