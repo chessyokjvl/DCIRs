@@ -33,22 +33,18 @@
         .dark .input-dark:focus { border-color: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.25); outline: none; }
         .dark .table-header-dark { background-color: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; }
         
-        .btn-gold { background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%); color: #ffffff; font-weight: 500; transition: all 0.2s ease; }
+        /* Components */
+        .btn-gold { background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%); color: #ffffff; font-weight: 500; transition: all 0.2s ease; cursor: pointer; }
         .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
         .dark .btn-gold { color: #0f172a; font-weight: 600; }
-        
         .nav-tab.active { border-bottom: 2px solid #d97706; color: #d97706; font-weight: 600; }
         .hidden { display: none !important; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 4px; }
         
-        /* PDF Template Template (Hidden in UI) */
-        #pdf-template { width: 800px; padding: 40px; background: white; color: black; font-family: 'Sarabun', 'Prompt', sans-serif; display: none; }
-        .pdf-title { text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
-        .pdf-section-title { font-weight: bold; font-size: 16px; margin-top: 15px; margin-bottom: 10px; }
-        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
-        .pdf-text { font-size: 14px; margin-bottom: 8px; line-height: 1.5; }
+        /* PDF Template */
+        #pdf-wrapper { display: none; }
     </style>
 </head>
 <body class="bg-light-main dark:bg-dark-main min-h-screen">
@@ -85,128 +81,149 @@
         </div>
 
         <div class="flex border-b border-slate-300 dark:border-slate-700 mb-6">
-            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active px-6 py-3 text-sm font-medium transition-colors">Dashboard (ข้อมูลทั้งหมด)</button>
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active px-6 py-3 text-sm font-medium transition-colors">Dashboard (จัดการข้อมูล)</button>
             <button onclick="switchTab('keyin')" id="tab-keyin" class="nav-tab px-6 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors">คีย์ข้อมูล Manual Form</button>
         </div>
 
         <div id="view-dashboard" class="space-y-6">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="panel-light dark:panel-dark p-6 rounded-xl border-l-4 border-l-amber-500">
-            <h2 class="text-sm font-medium mb-2">นำเข้าไฟล์ JVL RM (GodReport)</h2>
-            <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-amber-400 cursor-pointer mb-3">
-            <button onclick="processFile()" class="w-full py-2 text-xs rounded btn-gold">ประมวลผลไฟล์</button>
-        </div>
-        <div class="panel-light dark:panel-dark p-6 rounded-xl lg:col-span-2 flex flex-col justify-center items-start">
-            <h2 class="text-sm font-medium mb-3">การเชื่อมต่อฐานข้อมูล (Data Connection)</h2>
-            <div class="flex gap-3">
-                <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm">🔄 ดึงข้อมูลล่าสุด</button>
-                <button onclick="exportToExcel()" class="px-4 py-2 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">📊 Export to Excel</button>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="panel-light dark:panel-dark p-6 rounded-xl border-l-4 border-l-amber-500">
+                    <h2 class="text-sm font-medium mb-2">นำเข้าไฟล์ JVL RM (GodReport)</h2>
+                    <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-amber-400 cursor-pointer mb-3">
+                    <button onclick="processFile()" class="w-full py-2 text-xs rounded btn-gold">ประมวลผลไฟล์และบันทึก</button>
+                </div>
+                <div class="panel-light dark:panel-dark p-6 rounded-xl lg:col-span-2 flex flex-col justify-center items-start">
+                    <h2 class="text-sm font-medium mb-3">การเชื่อมต่อฐานข้อมูล (Data Connection)</h2>
+                    <div class="flex gap-3">
+                        <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm">🔄 ดึงข้อมูลล่าสุด</button>
+                        <button onclick="exportToExcel()" class="px-4 py-2 text-xs rounded bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm">📊 Export to Excel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-light dark:panel-dark p-5 rounded-xl flex flex-wrap items-end gap-5">
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ตั้งแต่วันที่ (เกิดเหตุ)</label>
+                    <input type="date" id="filterStart" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40 border-slate-300">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ถึงวันที่ (เกิดเหตุ)</label>
+                    <input type="date" id="filterEnd" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40 border-slate-300">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">หมวดหมู่ DCIRs</label>
+                    <select id="filterCategory" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-64 border-slate-300">
+                        <option value="all">แสดงรายการทั้งหมด</option>
+                        <option value="dcirs" selected>เฉพาะที่เข้าเกณฑ์รายงานกรม</option>
+                    </select>
+                </div>
+                <button onclick="clearFilters()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors h-9 border border-slate-300 dark:border-slate-600">
+                    ล้างตัวกรอง
+                </button>
+            </div>
+
+            <div class="panel-light dark:panel-dark rounded-xl overflow-hidden shadow-sm">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="table-header-light dark:table-header-dark text-xs text-slate-600 dark:text-slate-400">
+                            <tr>
+                                <th onclick="handleSort('เลขที่ใบความเสี่ยง')" class="py-3 px-4 cursor-pointer hover:text-amber-500 transition-colors">เลขที่อ้างอิง ↕</th>
+                                <th onclick="handleSort('วันที่เกิดเหตุ')" class="py-3 px-4 cursor-pointer hover:text-amber-500 transition-colors">วันที่เกิดเหตุ ↕</th>
+                                <th onclick="handleSort('ระดับ')" class="py-3 px-4 cursor-pointer hover:text-amber-500 text-center transition-colors">ระดับ ↕</th>
+                                <th onclick="handleSort('DMHC')" class="py-3 px-4 cursor-pointer hover:text-amber-500 transition-colors">หมวดหมู่ DCIRs ↕</th>
+                                <th class="py-3 px-4 max-w-xs">รายการเหตุการณ์</th>
+                                <th class="py-3 px-4 text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidentTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/50">
+                            </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
-
-    <div class="panel-light dark:panel-dark p-5 rounded-xl flex flex-wrap items-end gap-5">
-        <div>
-            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ตั้งแต่วันที่ (เกิดเหตุ)</label>
-            <input type="date" id="filterStart" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40">
-        </div>
-        <div>
-            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">ถึงวันที่ (เกิดเหตุ)</label>
-            <input type="date" id="filterEnd" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-40">
-        </div>
-        <div>
-            <label class="block text-xs font-medium mb-1 text-slate-500 dark:text-slate-400">หมวดหมู่ DCIRs</label>
-            <select id="filterCategory" onchange="applyFilters()" class="px-3 py-2 rounded input-light dark:input-dark text-sm w-56">
-                <option value="all">แสดงรายการทั้งหมด</option>
-                <option value="dcirs" selected>เฉพาะที่เข้าเกณฑ์รายงานกรม</option>
-            </select>
-        </div>
-        <button onclick="clearFilters()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition-colors h-10 border border-slate-300 dark:border-slate-600">
-            ล้างตัวกรอง
-        </button>
-    </div>
-
-    <div class="panel-light dark:panel-dark rounded-xl overflow-hidden">
-        <div class="overflow-x-auto custom-scrollbar">
-            <table class="w-full text-left text-sm whitespace-nowrap">
-                <thead class="table-header-light dark:table-header-dark text-xs text-slate-600 dark:text-slate-400">
-                    <tr>
-                        <th onclick="handleSort('เลขที่ใบความเสี่ยง')" class="py-3 px-4 cursor-pointer hover:text-amber-500">เลขที่อ้างอิง ↕</th>
-                        <th onclick="handleSort('วันที่เกิดเหตุ')" class="py-3 px-4 cursor-pointer hover:text-amber-500">วันที่เกิดเหตุ ↕</th>
-                        <th onclick="handleSort('ระดับ')" class="py-3 px-4 cursor-pointer hover:text-amber-500 text-center">ระดับ ↕</th>
-                        <th onclick="handleSort('DMHC')" class="py-3 px-4 cursor-pointer hover:text-amber-500">หมวดหมู่ DCIRs ↕</th>
-                        <th class="py-3 px-4 max-w-xs">รายการ</th>
-                        <th class="py-3 px-4 text-center">จัดการ</th>
-                    </tr>
-                </thead>
-                <tbody id="incidentTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/50">
-                    </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 
         <div id="view-keyin" class="hidden">
             <form id="manual-form" onsubmit="submitManualForm(event)" class="panel-light dark:panel-dark rounded-xl p-6 md:p-8">
-                <h2 class="text-lg font-semibold mb-4 text-amber-600 dark:text-amber-400 border-b border-slate-200 dark:border-slate-700 pb-2">บันทึกข้อมูล DCIRs (Manual Key-in)</h2>
+                <h2 class="text-lg font-semibold mb-6 text-amber-600 dark:text-amber-400 border-b border-slate-200 dark:border-slate-700 pb-2">บันทึกข้อมูล DCIRs (Manual Key-in)</h2>
                 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                     <div>
-                        <label class="block text-xs font-medium mb-1">วันที่รายงาน</label>
-                        <input type="date" id="m_date" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                        <label class="block text-xs font-medium mb-1">วันที่รายงาน / วันที่เกิดเหตุ</label>
+                        <input type="date" id="m_date" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
                     <div>
                         <label class="block text-xs font-medium mb-1">เวลา</label>
-                        <input type="time" id="m_time" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                        <input type="time" id="m_time" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
                     <div>
                         <label class="block text-xs font-medium mb-1">เลขที่ใบความเสี่ยง (เว้นว่างเพื่อสร้างอัตโนมัติ)</label>
-                        <input type="text" id="m_riskId" placeholder="เช่น RM69-001" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                        <input type="text" id="m_riskId" placeholder="เช่น RM69-001" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
                     <div>
                         <label class="block text-xs font-medium mb-1">ระดับความรุนแรง</label>
-                        <select id="m_severity" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
-                            <option value="I">I</option><option value="H">H</option><option value="G">G</option><option value="5">5</option><option value="4">4</option>
+                        <select id="m_severity" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
+                            <option value="I">I (เสียชีวิต/รุนแรงสุด)</option><option value="H">H (ต้อง CPR)</option><option value="G">G (พิการถาวร)</option><option value="5">5</option><option value="4">4</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="md:col-span-2">
                         <label class="block text-xs font-medium mb-1">สถานที่ / หน่วยงานที่เกี่ยวข้อง</label>
-                        <input type="text" id="m_location" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                        <input type="text" id="m_location" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
-                    <div>
-                        <label class="block text-xs font-medium mb-1">หมวดหมู่ DCIRs ตามกรม</label>
-                        <select id="m_category" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
-                            <option value="การฆ่าตัวตายในโรงพยาบาล">การฆ่าตัวตายในโรงพยาบาล</option>
-                            <option value="การทำร้ายร่างกายในโรงพยาบาล">การทำร้ายร่างกายในโรงพยาบาล</option>
-                            <option value="ความคลาดเคลื่อนทางยาที่รุนแรง">ความคลาดเคลื่อนทางยาที่รุนแรง</option>
-                            <option value="บุคลากรถูกทำร้ายร่างกายในที่ทำงาน">บุคลากรถูกทำร้ายร่างกายในที่ทำงาน</option>
-                            <option value="ผู้ป่วยนิติจิตเวชหลบหนีออกจากโรงพยาบาล">ผู้ป่วยนิติจิตเวชหลบหนีออกจากโรงพยาบาล</option>
-                            <option value="อื่นๆ (รอพิจารณา)">อื่นๆ</option>
-                        </select>
+
+                    <div class="md:col-span-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
+                        <label class="block text-sm font-medium mb-3 text-amber-600 dark:text-amber-400">หมวดหมู่ DCIRs ตามเกณฑ์กรมสุขภาพจิต</label>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-medium mb-1 text-slate-500">Level 1: ด้านความเสี่ยง</label>
+                                <select id="m_level1" onchange="updateLevel2()" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
+                                    <option value="">-- เลือกด้าน --</option>
+                                    <option value="ด้านความปลอดภัยของผู้ป่วย">ด้านความปลอดภัยของผู้ป่วย</option>
+                                    <option value="ด้านการรักษา">ด้านการรักษา</option>
+                                    <option value="ด้านโครงสร้างพื้นฐานและสาธารณภัย">ด้านโครงสร้างพื้นฐานและสาธารณภัย</option>
+                                    <option value="ด้านกฎหมายและสังคม">ด้านกฎหมายและสังคม</option>
+                                    <option value="ด้านบุคลากร">ด้านบุคลากร</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1 text-slate-500">Level 2: ประเภทเหตุการณ์</label>
+                                <select id="m_level2" onchange="updateLevel3()" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300 disabled:opacity-50" disabled>
+                                    <option value="">-- เลือกประเภทเหตุการณ์ --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium mb-1 text-slate-500">Level 3: ประเภทย่อย (ถ้ามี)</label>
+                                <select id="m_level3" onchange="checkOtherOption()" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300 disabled:opacity-50" disabled>
+                                    <option value="">-- ไม่ระบุ --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="m_other_container" class="mt-3 hidden animate-fade-in">
+                            <input type="text" id="m_other_specify" placeholder="โปรดระบุรายละเอียดเพิ่มเติม..." class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-amber-400 focus:border-amber-500">
+                        </div>
                     </div>
                 </div>
 
                 <div class="space-y-4 mb-6">
                     <div>
-                        <label class="block text-xs font-medium mb-1">รายการเหตุการณ์ (สั้นๆ)</label>
-                        <input type="text" id="m_itemText" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                        <label class="block text-xs font-medium mb-1">รายการเหตุการณ์สั้นๆ (จากระบบ JVL RM ถ้ามี)</label>
+                        <input type="text" id="m_itemText" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300">
                     </div>
                     <div>
-                        <label class="block text-xs font-medium mb-1">รายละเอียดเหตุการณ์</label>
-                        <textarea id="m_details" rows="3" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm"></textarea>
+                        <label class="block text-xs font-medium mb-1">รายละเอียดเหตุการณ์เบื้องต้น</label>
+                        <textarea id="m_details" rows="3" required class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300"></textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-medium mb-1">การแก้ไขเบื้องต้น</label>
-                        <textarea id="m_fix" rows="2" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm"></textarea>
+                        <label class="block text-xs font-medium mb-1">การแก้ไขปัญหาเบื้องต้น</label>
+                        <textarea id="m_fix" rows="2" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm border-slate-300"></textarea>
                     </div>
                 </div>
 
-                <button type="submit" class="w-full py-2.5 rounded btn-gold text-sm tracking-wide">บันทึกข้อมูลเข้าสู่ฐานระบบ</button>
+                <button type="submit" class="w-full py-3 rounded-lg btn-gold text-sm tracking-wide shadow-lg">บันทึกข้อมูลเข้าสู่ฐานระบบ</button>
             </form>
         </div>
     </div>
 
-    <div id="pdf-wrapper" class="hidden">
+    <div id="pdf-wrapper">
         <div id="pdf-content" style="width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;">
             <div style="text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 20px;">
                 แบบรายงานเหตุการณ์สำคัญเร่งด่วน (Sentinel Events)<br>
@@ -220,8 +237,8 @@
             
             <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 1: ประเภทของเหตุการณ์</div>
             <div style="font-size: 14px; margin-bottom: 20px;">
-                [ x ] <span id="pdf-category">......................................................</span><br>
-                <span style="color: #666; font-size: 12px;">* ประมวลผลจากระบบ Auto-Mapping</span>
+                [ x ] <span id="pdf-category" style="font-weight: bold; text-decoration: underline;">......................................................</span><br>
+                <span style="color: #666; font-size: 12px; margin-top: 5px; display: inline-block;">* ประมวลผลและจัดหมวดหมู่จากระบบอัตโนมัติ</span>
             </div>
 
             <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 2: รายละเอียดเหตุการณ์</div>
@@ -246,13 +263,16 @@
     </div>
 
     <script>
-        // *** ใส่ URL Web App อันใหม่ของโค้ดส่วนที่ 1 ที่นี่ ***
+        // *** วาง URL ของ Google Apps Script ที่ Deploy เสร็จแล้ว ตรงนี้ครับ ***
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyF9h6ZlUuVRY3bn50cHwW-nnavH2eWQZp_Jd4y7T-YXgd3QtLWPLO7HVtBeZbwbaVBig/exec';
         
         let authToken = sessionStorage.getItem('dcirs_token');
-        let currentData = []; // เก็บ Data ไว้สำหรับทำ Excel/PDF
+        let allDataCache = [];
+        let currentData = [];
+        let sortCol = 'วันที่เกิดเหตุ';
+        let sortAsc = false;
 
-        // Theme Management
+        // Theme Setup
         function toggleTheme() {
             const html = document.documentElement;
             html.classList.toggle('dark');
@@ -281,25 +301,21 @@
             }
         };
 
-        // Tab Switching
+        // UI & Login
         function switchTab(tabName) {
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'text-amber-600'));
             document.getElementById('view-dashboard').classList.add('hidden');
             document.getElementById('view-keyin').classList.add('hidden');
-            
             document.getElementById(`tab-${tabName}`).classList.add('active');
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
-            
-            if(tabName === 'dashboard') fetchDashboardData();
+            if(tabName === 'dashboard') applyFilters(); // Refresh view
         }
 
-        // Login Logic
         async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             Swal.fire({ title: 'ตรวจสอบสิทธิ์...', didOpen: () => Swal.showLoading() });
-
             try {
                 const res = await fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
                 const result = await res.json();
@@ -311,143 +327,110 @@
                     document.getElementById('main-app').classList.remove('hidden');
                     fetchDashboardData();
                 } else { Swal.fire('ล้มเหลว', result.message, 'error'); }
-            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server', 'error'); }
+            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server (ตรวจสอบ URL)', 'error'); }
         }
-
         function logout() { sessionStorage.removeItem('dcirs_token'); window.location.reload(); }
 
-        // Fetch & Render Dashboard
-        // ตัวแปรเก็บสถานะการ Sort
-let sortCol = 'วันที่เกิดเหตุ';
-let sortAsc = false;
-let allDataCache = []; // เก็บข้อมูลทั้งหมดจาก Server
-
-// แก้ไขฟังก์ชัน fetchDashboardData เพื่ออัปเดต allDataCache
-async function fetchDashboardData() {
-    try {
-        const res = await fetch(GAS_WEB_APP_URL);
-        const result = await res.json();
-        if (result.status === 'success') {
-            allDataCache = result.data;
-            applyFilters(); // เรียกตัวกรองอัตโนมัติทันที
-        }
-    } catch (err) { console.error("Error loading table", err); }
-}
-
-// ฟังก์ชันแปลงวันที่ พ.ศ. (String) เป็น Timestamp ค.ศ. (ตัวเลข) สำหรับการเทียบ Date Range
-function parseThaiDateToTimestamp(thaiDateStr) {
-    if(!thaiDateStr) return 0;
-    let parts = thaiDateStr.replace(/'/g, '').split('/');
-    if(parts.length !== 3) return 0;
-    let d = parseInt(parts[0]);
-    let m = parseInt(parts[1]) - 1; // เดือนใน JS เริ่มที่ 0
-    let y = parseInt(parts[2]) - 543; // แปลงพ.ศ. กลับเป็น ค.ศ.
-    return new Date(y, m, d).getTime();
-}
-
-// ฟังก์ชันทำงานเมื่อกดปุ่ม ล้างตัวกรอง
-function clearFilters() {
-    document.getElementById('filterStart').value = '';
-    document.getElementById('filterEnd').value = '';
-    document.getElementById('filterCategory').value = 'all';
-    applyFilters();
-}
-
-// ฟังก์ชันสำหรับจัดเรียงและกรองข้อมูล
-function applyFilters() {
-    let filtered = [...allDataCache];
-    
-    // 1. กรองตามวันที่ (Date Range)
-    const startDateVal = document.getElementById('filterStart').value;
-    const endDateVal = document.getElementById('filterEnd').value;
-    
-    if (startDateVal || endDateVal) {
-        let startTs = startDateVal ? new Date(startDateVal).getTime() : 0;
-        let endTs = endDateVal ? new Date(endDateVal).getTime() : Infinity;
-        
-        filtered = filtered.filter(row => {
-            let rowTs = parseThaiDateToTimestamp(row['วันที่เกิดเหตุ']);
-            return rowTs >= startTs && rowTs <= endTs;
-        });
-    }
-
-    // 2. กรองตามหมวดหมู่ DCIRs
-    const categoryFilter = document.getElementById('filterCategory').value;
-    if (categoryFilter === 'dcirs') {
-        filtered = filtered.filter(row => row['DMHC'] && !row['DMHC'].includes('อื่นๆ'));
-    }
-
-    // 3. การจัดเรียง (Sorting)
-    filtered.sort((a, b) => {
-        let valA = a[sortCol] || '';
-        let valB = b[sortCol] || '';
-
-        // ถ้าเรียงตามระดับ ให้ฉลาดขึ้นโดยกำหนดน้ำหนัก (I สูงสุด)
-        if (sortCol === 'ระดับ') {
-            const weights = { 'I': 5, 'H': 4, 'G': 3, '5': 2, '4': 1 };
-            valA = weights[valA.toString().toUpperCase()] || 0;
-            valB = weights[valB.toString().toUpperCase()] || 0;
-            return sortAsc ? valA - valB : valB - valA;
-        }
-        
-        // ถ้าเรียงตามวันที่เกิดเหตุ ให้แปลงเป็น Timestamp ก่อนเรียง
-        if (sortCol === 'วันที่เกิดเหตุ') {
-            valA = parseThaiDateToTimestamp(valA);
-            valB = parseThaiDateToTimestamp(valB);
-            return sortAsc ? valA - valB : valB - valA;
+        // Fetch & Sort & Filter Data
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch(GAS_WEB_APP_URL);
+                const result = await res.json();
+                if (result.status === 'success') {
+                    allDataCache = result.data;
+                    applyFilters(); 
+                }
+            } catch (err) { console.error("Error loading table", err); }
         }
 
-        // การเรียงตัวอักษรปกติ
-        if(valA < valB) return sortAsc ? -1 : 1;
-        if(valA > valB) return sortAsc ? 1 : -1;
-        return 0;
-    });
+        function parseThaiDateToTimestamp(thaiDateStr) {
+            if(!thaiDateStr) return 0;
+            let parts = thaiDateStr.replace(/'/g, '').split('/');
+            if(parts.length !== 3) return 0;
+            let d = parseInt(parts[0]);
+            let m = parseInt(parts[1]) - 1; 
+            let y = parseInt(parts[2]) - 543; 
+            return new Date(y, m, d).getTime();
+        }
 
-    currentData = filtered; // บันทึกข้อมูลที่ถูกกรองไว้เผื่อ Export
-    renderTableBody(filtered);
-}
+        function clearFilters() {
+            document.getElementById('filterStart').value = '';
+            document.getElementById('filterEnd').value = '';
+            document.getElementById('filterCategory').value = 'all';
+            applyFilters();
+        }
 
-// ฟังก์ชันสลับการจัดเรียงเมื่อคลิกหัวตาราง
-function handleSort(columnName) {
-    if (sortCol === columnName) {
-        sortAsc = !sortAsc; // สลับทิศทาง
-    } else {
-        sortCol = columnName;
-        sortAsc = true; // เปลี่ยนคอลัมน์ให้เริ่มแบบน้อยไปมาก
-    }
-    applyFilters();
-}
+        function applyFilters() {
+            let filtered = [...allDataCache];
+            const startVal = document.getElementById('filterStart').value;
+            const endVal = document.getElementById('filterEnd').value;
+            
+            if (startVal || endVal) {
+                let startTs = startVal ? new Date(startVal).getTime() : 0;
+                let endTs = endVal ? new Date(endVal).getTime() : Infinity;
+                filtered = filtered.filter(row => {
+                    let rowTs = parseThaiDateToTimestamp(row['วันที่เกิดเหตุ']);
+                    return rowTs >= startTs && rowTs <= endTs;
+                });
+            }
 
-// ฟังก์ชันวาดข้อมูลลงตารางแยกออกมาเพื่อความสะอาดของโค้ด
-function renderTableBody(dataArray) {
-    const tbody = document.getElementById('incidentTableBody');
-    tbody.innerHTML = '';
-    
-    if(dataArray.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">ไม่พบข้อมูลที่ตรงกับเงื่อนไขตัวกรอง</td></tr>'; 
-        return;
-    }
+            const catFilter = document.getElementById('filterCategory').value;
+            if (catFilter === 'dcirs') {
+                filtered = filtered.filter(row => row['DMHC'] && !row['DMHC'].includes('อื่นๆ'));
+            }
 
-    dataArray.forEach((row, i) => {
-        let isDcirs = row['DMHC'] && !row['DMHC'].includes('อื่นๆ');
-        
-        let tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors';
-        tr.innerHTML = `
-            <td class="py-3 px-4 font-mono text-xs font-medium text-amber-600 dark:text-amber-500">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
-            <td class="py-3 px-4 text-xs text-slate-700 dark:text-slate-300">${row['วันที่เกิดเหตุ'] || '-'}</td>
-            <td class="py-3 px-4 text-xs text-center"><span class="px-2 py-0.5 rounded font-bold bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">${row['ระดับ'] || '-'}</span></td>
-            <td class="py-3 px-4 text-xs font-medium ${isDcirs ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">${row['DMHC'] || '-'}</td>
-            <td class="py-3 px-4 text-xs max-w-[200px] truncate text-slate-600 dark:text-slate-400" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
-            <td class="py-3 px-4 text-center">
-                <button onclick="generatePDF(${i})" class="px-3 py-1.5 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm font-medium">📄 ออกฟอร์ม PDF</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
+            filtered.sort((a, b) => {
+                let valA = a[sortCol] || ''; let valB = b[sortCol] || '';
+                if (sortCol === 'ระดับ') {
+                    const weights = { 'I': 5, 'H': 4, 'G': 3, '5': 2, '4': 1 };
+                    valA = weights[valA.toString().toUpperCase()] || 0;
+                    valB = weights[valB.toString().toUpperCase()] || 0;
+                    return sortAsc ? valA - valB : valB - valA;
+                }
+                if (sortCol === 'วันที่เกิดเหตุ') {
+                    valA = parseThaiDateToTimestamp(valA); valB = parseThaiDateToTimestamp(valB);
+                    return sortAsc ? valA - valB : valB - valA;
+                }
+                if(valA < valB) return sortAsc ? -1 : 1;
+                if(valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
 
-        // Export Excel using SheetJS
+            currentData = filtered;
+            renderTableBody(filtered);
+        }
+
+        function handleSort(colName) {
+            if (sortCol === colName) { sortAsc = !sortAsc; } 
+            else { sortCol = colName; sortAsc = true; }
+            applyFilters();
+        }
+
+        function renderTableBody(dataArray) {
+            const tbody = document.getElementById('incidentTableBody');
+            tbody.innerHTML = '';
+            if(dataArray.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-6 text-slate-500">ไม่พบข้อมูลที่ตรงกับเงื่อนไข</td></tr>'; return;
+            }
+            dataArray.forEach((row, index) => {
+                let isDcirs = row['DMHC'] && !row['DMHC'].includes('อื่นๆ');
+                let tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 font-mono text-xs font-medium text-amber-600 dark:text-amber-500">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
+                    <td class="py-3 px-4 text-xs">${row['วันที่เกิดเหตุ'] || '-'}</td>
+                    <td class="py-3 px-4 text-xs text-center"><span class="px-2 py-0.5 rounded font-bold bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">${row['ระดับ'] || '-'}</span></td>
+                    <td class="py-3 px-4 text-xs font-medium ${isDcirs ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400'}">${row['DMHC'] || '-'}</td>
+                    <td class="py-3 px-4 text-xs max-w-[200px] truncate" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
+                    <td class="py-3 px-4 text-center">
+                        <button onclick="generatePDF(${index})" class="px-3 py-1.5 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors shadow-sm">📄 PDF</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Export Actions
         function exportToExcel() {
             if(currentData.length === 0) return Swal.fire('ไม่มีข้อมูล', 'ไม่พบข้อมูลสำหรับส่งออก', 'info');
             const ws = XLSX.utils.json_to_sheet(currentData);
@@ -456,7 +439,27 @@ function renderTableBody(dataArray) {
             XLSX.writeFile(wb, "DCIRs_Report.xlsx");
         }
 
-        // Upload File Logic (Upsert)
+        function generatePDF(index) {
+            const rowData = currentData[index];
+            document.getElementById('pdf-date').innerText = rowData['วันที่เกิดเหตุ'] || '-';
+            document.getElementById('pdf-time').innerText = rowData['เวลา'] || '-';
+            document.getElementById('pdf-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
+            document.getElementById('pdf-category').innerText = rowData['DMHC'] || 'อื่นๆ';
+            document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
+            document.getElementById('pdf-level').innerText = rowData['ระดับ'] || '-';
+            document.getElementById('pdf-item').innerText = rowData['รายการ'] || '-';
+            document.getElementById('pdf-details').innerText = rowData['รายละเอียด'] || '-';
+            document.getElementById('pdf-fix').innerText = rowData['การแก้ไขเบื้องต้น'] || '-';
+
+            const element = document.getElementById('pdf-content');
+            document.getElementById('pdf-wrapper').style.display = 'block';
+
+            const opt = { margin: 10, filename: `DCIRs_${rowData['เลขที่ใบความเสี่ยง']}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            Swal.fire({ title: 'กำลังสร้าง PDF...', timer: 1500, didOpen: () => Swal.showLoading() });
+            html2pdf().set(opt).from(element).save().then(() => { document.getElementById('pdf-wrapper').style.display = 'none'; });
+        }
+
+        // File Upload Upsert
         async function processFile() {
             const fileInput = document.getElementById('fileUpload');
             if (!fileInput.files.length) return Swal.fire('แจ้งเตือน', 'กรุณาเลือกไฟล์', 'warning');
@@ -483,16 +486,85 @@ function renderTableBody(dataArray) {
             reader.readAsArrayBuffer(fileInput.files[0]);
         }
 
-        // Manual Key-in Logic
+        // --- Manual Form Logic (Cascading Dropdown) ---
+        const dcirsHierarchy = {
+            "ด้านความปลอดภัยของผู้ป่วย": { "การฆ่าตัวตายในโรงพยาบาล": [], "การทำร้ายร่างกายในโรงพยาบาล": [], "การทำลายทรัพย์สินในโรงพยาบาล": [], "การล่วงละเมิดทางเพศในโรงพยาบาล": [], "การเสียชีวิตจากการผูกยึดหรือกักขัง": [], "ผู้ป่วยนิติจิตเวชหลบหนีออกจากโรงพยาบาล": [] },
+            "ด้านการรักษา": { "ความคลาดเคลื่อนทางยาที่รุนแรง": [], "ภาวะแทรกซ้อนรุนแรงจากการรักษา": [], "การ รับ-ส่งต่อ ผู้ป่วยผิดพลาด": [], "การปฏิเสธการ รับ-ส่งต่อ ผู้ป่วย": [] },
+            "ด้านโครงสร้างพื้นฐานและสาธารณภัย": { "อัคคีภัยในหน่วยงาน": [], "ระบบสำคัญล่ม": ["ภัยไซเบอร์", "ระบบ IT หรือไฟฟ้าล่มนาน", "อื่นๆ (ระบุ)"], "ภัยธรรมชาติ": ["น้ำท่วม", "แผ่นดินไหว", "อื่นๆ (ระบุ)"] },
+            "ด้านกฎหมายและสังคม": { "คลิปด้านลบที่เกิดในโรงพยาบาลถูกเผยแพร่ในสื่อสังคมออนไลน์": [], "เกิดข้อร้องเรียนผ่านสื่อ": [], "ผู้ป่วยที่เกี่ยวข้องกับเหตุการณ์ที่ได้รับความสนใจจากสังคมเข้ารับการรักษา": [] },
+            "ด้านบุคลากร": { "บุคลากรถูกทำร้ายร่างกายในที่ทำงาน": [], "บุคลากรถูกคุกคามทางเพศในที่ทำงาน": [], "บุคลากรประสบอุบัติเหตุจากการทำงาน": [], "บุคลากรฆ่าตัวตาย": [], "การชุมนุมประท้วงของบุคลากร": [] }
+        };
+
+        function updateLevel2() {
+            const l1 = document.getElementById('m_level1').value;
+            const l2Select = document.getElementById('m_level2');
+            const l3Select = document.getElementById('m_level3');
+            
+            l2Select.innerHTML = '<option value="">-- เลือกประเภทเหตุการณ์ --</option>';
+            l3Select.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
+            l2Select.disabled = true; l3Select.disabled = true;
+            document.getElementById('m_other_container').classList.add('hidden');
+            document.getElementById('m_other_specify').value = '';
+
+            if (l1 && dcirsHierarchy[l1]) {
+                l2Select.disabled = false;
+                for (const key in dcirsHierarchy[l1]) {
+                    let opt = document.createElement('option'); opt.value = key; opt.innerHTML = key;
+                    l2Select.appendChild(opt);
+                }
+            }
+        }
+
+        function updateLevel3() {
+            const l1 = document.getElementById('m_level1').value;
+            const l2 = document.getElementById('m_level2').value;
+            const l3Select = document.getElementById('m_level3');
+            
+            l3Select.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
+            l3Select.disabled = true;
+            document.getElementById('m_other_container').classList.add('hidden');
+            document.getElementById('m_other_specify').value = '';
+
+            if (l1 && l2 && dcirsHierarchy[l1][l2].length > 0) {
+                l3Select.disabled = false;
+                dcirsHierarchy[l1][l2].forEach(item => {
+                    let opt = document.createElement('option'); opt.value = item; opt.innerHTML = item;
+                    l3Select.appendChild(opt);
+                });
+            } else { checkOtherOption(); } // ถ้าไม่มี L3 ให้เช็คเลยว่าต้องแสดงช่องอื่นๆไหม (เผื่อกรณีดัดแปลงอนาคต)
+        }
+
+        function checkOtherOption() {
+            const l3 = document.getElementById('m_level3').value;
+            const otherContainer = document.getElementById('m_other_container');
+            if (l3 === 'อื่นๆ (ระบุ)') {
+                otherContainer.classList.remove('hidden'); document.getElementById('m_other_specify').focus();
+            } else {
+                otherContainer.classList.add('hidden'); document.getElementById('m_other_specify').value = '';
+            }
+        }
+
         async function submitManualForm(e) {
             e.preventDefault();
+            
+            let finalDcirs = "";
+            const l1 = document.getElementById('m_level1').value;
+            const l2 = document.getElementById('m_level2').value;
+            const l3 = document.getElementById('m_level3').value;
+            const otherText = document.getElementById('m_other_specify').value.trim();
+
+            if (!l1 || !l2) return Swal.fire('ข้อมูลไม่ครบ', 'กรุณาระบุหมวดหมู่ DCIRs ให้ครบถ้วน', 'warning');
+            
+            if (l3) { finalDcirs = (l3 === 'อื่นๆ (ระบุ)' && otherText) ? `อื่นๆ (${otherText})` : l3; } 
+            else { finalDcirs = l2; }
+
             const payload = {
                 incidentDate: document.getElementById('m_date').value,
                 incidentTime: document.getElementById('m_time').value,
                 riskId: document.getElementById('m_riskId').value,
                 severity: document.getElementById('m_severity').value,
                 location: document.getElementById('m_location').value,
-                dcirsCategory: document.getElementById('m_category').value,
+                dcirsCategory: finalDcirs,
                 itemText: document.getElementById('m_itemText').value,
                 details: document.getElementById('m_details').value,
                 initialFix: document.getElementById('m_fix').value
@@ -505,41 +577,10 @@ function renderTableBody(dataArray) {
                 if (result.status === 'success') {
                     Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
                     document.getElementById('manual-form').reset();
+                    updateLevel2(); // รีเซ็ต Dropdown
+                    fetchDashboardData(); // อัปเดตข้อมูลเบื้องหลัง
                 } else { Swal.fire('Error', result.message, 'error'); }
-            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อได้', 'error'); }
-        }
-
-        // Export PDF using html2pdf
-        function generatePDF(index) {
-            const rowData = currentData[index];
-            
-            // Map data to hidden template
-            document.getElementById('pdf-date').innerText = rowData['วันที่เกิดเหตุ'] || '-';
-            document.getElementById('pdf-time').innerText = rowData['เวลา'] || '-';
-            document.getElementById('pdf-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
-            document.getElementById('pdf-category').innerText = rowData['DMHC'] || 'อื่นๆ';
-            document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
-            document.getElementById('pdf-level').innerText = rowData['ระดับ'] || '-';
-            document.getElementById('pdf-item').innerText = rowData['รายการ'] || '-';
-            document.getElementById('pdf-details').innerText = rowData['รายละเอียด'] || '-';
-            document.getElementById('pdf-fix').innerText = rowData['การแก้ไขเบื้องต้น'] || '-';
-
-            const element = document.getElementById('pdf-content');
-            element.style.display = 'block'; // Make visible for render
-
-            const opt = {
-                margin:       10,
-                filename:     `DCIRs_${rowData['เลขที่ใบความเสี่ยง']}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            Swal.fire({ title: 'กำลังสร้าง PDF...', timer: 1500, didOpen: () => Swal.showLoading() });
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.display = 'none'; // Hide again
-            });
+            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server', 'error'); }
         }
     </script>
 </body>
