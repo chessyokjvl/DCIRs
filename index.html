@@ -1,358 +1,427 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DCIRs Management System | DMH</title>
+    <title>DCIRs | Loei Rajanagarindra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: { fontFamily: { sans: ['Prompt', 'sans-serif'] } } }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Prompt', sans-serif;
-            background: linear-gradient(135deg, #090d16 0%, #111827 100%);
-            color: #f1f5f9;
-            min-height: 100vh;
-        }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
-        }
-        .input-lux {
-            background: rgba(15, 23, 42, 0.7);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            color: white;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .input-lux:focus {
-            border-color: #fbbf24;
-            outline: none;
-            box-shadow: 0 0 12px rgba(251, 191, 36, 0.25);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%);
-            color: #0f172a;
-            font-weight: 600;
-            box-shadow: 0 4px 14px rgba(217, 119, 6, 0.2);
-            transition: all 0.2s ease;
-        }
-        .btn-gold:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4);
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(251, 191, 36, 0.3); border-radius: 4px; }
+        body { transition: background-color 0.3s, color 0.3s; }
+        
+        /* Light Theme */
+        .bg-light-main { background-color: #f1f5f9; color: #1e293b; }
+        .panel-light { background: #ffffff; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .input-light { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
+        .input-light:focus { border-color: #d97706; box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.2); outline: none; }
+        .table-header-light { background-color: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+        
+        /* Dark Theme */
+        .dark .bg-dark-main { background: linear-gradient(135deg, #090d16 0%, #111827 100%); color: #f1f5f9; }
+        .dark .panel-dark { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.7); }
+        .dark .input-dark { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(251, 191, 36, 0.2); color: white; }
+        .dark .input-dark:focus { border-color: #fbbf24; box-shadow: 0 0 12px rgba(251, 191, 36, 0.25); outline: none; }
+        .dark .table-header-dark { background-color: rgba(15, 23, 42, 0.6); border-bottom: 1px solid #334155; }
+        
+        .btn-gold { background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #f59e0b 100%); color: #ffffff; font-weight: 500; transition: all 0.2s ease; }
+        .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4); }
+        .dark .btn-gold { color: #0f172a; font-weight: 600; }
+        
+        .nav-tab.active { border-bottom: 2px solid #d97706; color: #d97706; font-weight: 600; }
         .hidden { display: none !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(217, 119, 6, 0.5); border-radius: 4px; }
+        
+        /* PDF Template Template (Hidden in UI) */
+        #pdf-template { width: 800px; padding: 40px; background: white; color: black; font-family: 'Sarabun', 'Prompt', sans-serif; display: none; }
+        .pdf-title { text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 20px; }
+        .pdf-section-title { font-weight: bold; font-size: 16px; margin-top: 15px; margin-bottom: 10px; }
+        .pdf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px; }
+        .pdf-text { font-size: 14px; margin-bottom: 8px; line-height: 1.5; }
     </style>
 </head>
-<body class="p-4 md:p-8 flex items-center justify-center">
+<body class="bg-light-main dark:bg-dark-main min-h-screen">
 
-    <div id="login-screen" class="w-full max-w-md glass-panel rounded-2xl p-8 border border-yellow-500/10">
-        <div class="text-center mb-8">
-            <div class="w-20 h-20 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-2xl mx-auto flex items-center justify-center mb-4 shadow-xl shadow-amber-500/10 rotate-3">
-                <svg class="w-10 h-10 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md panel-light dark:panel-dark rounded-2xl p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-semibold tracking-wide text-amber-600 dark:text-amber-400">DCIRs SYSTEM</h1>
+                <p class="text-sm mt-1 text-slate-500 dark:text-slate-400">โรงพยาบาลจิตเวชเลยราชนครินทร์</p>
             </div>
-            <h1 class="text-2xl font-semibold tracking-wider text-white">DCIRs GATEWAY</h1>
-            <p class="text-amber-400/80 mt-1 text-xs uppercase tracking-widest font-light">โรงพยาบาลจิตเวชเลยราชนครินทร์</p>
+            <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="space-y-4">
+                    <input type="text" id="username" class="w-full px-4 py-3 rounded-lg input-light dark:input-dark text-sm" required placeholder="Username">
+                    <input type="password" id="password" class="w-full px-4 py-3 rounded-lg input-light dark:input-dark text-sm" required placeholder="Password">
+                    <button type="submit" class="w-full py-3 rounded-lg btn-gold mt-4">เข้าสู่ระบบ</button>
+                </div>
+            </form>
         </div>
-
-        <form id="login-form" onsubmit="handleLogin(event)">
-            <div class="space-y-5">
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Username</label>
-                    <input type="text" id="username" class="w-full px-4 py-3 rounded-lg input-lux text-sm" required placeholder="ชื่อผู้ใช้งาน">
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Password</label>
-                    <input type="password" id="password" class="w-full px-4 py-3 rounded-lg input-lux text-sm" required placeholder="รหัสผ่าน">
-                </div>
-                <button type="submit" class="w-full py-3 rounded-lg btn-gold mt-6 tracking-widest uppercase text-xs">
-                    เข้าสู่ระบบรักษาความปลอดภัย
-                </button>
-            </div>
-        </form>
     </div>
 
-    <div id="dashboard-screen" class="hidden w-full max-w-7xl animate-fade-in">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-slate-800 pb-5">
+    <div id="main-app" class="hidden max-w-7xl mx-auto p-4 md:p-8">
+        
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
             <div>
-                <span class="text-xs font-semibold text-amber-400 uppercase tracking-widest">Director Critical Information Requirements</span>
-                <h1 class="text-3xl font-semibold text-white tracking-wide mt-1">DCIRs DMH Dashboard</h1>
+                <h1 class="text-2xl font-semibold dark:text-white text-slate-800">DCIRs Management</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Director Critical Information Requirements</p>
             </div>
-            <div class="flex items-center gap-3 w-full md:w-auto">
-                <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700">
-                    🔄 รีเฟรชข้อมูล
+            <div class="flex items-center gap-4">
+                <button onclick="toggleTheme()" class="p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors">
+                    <svg id="theme-icon" class="w-5 h-5 text-slate-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
                 </button>
-                <button onclick="logout()" class="px-4 py-2 text-xs rounded-lg border border-rose-500/30 hover:bg-rose-950/30 text-rose-400 transition-all">
-                    ออกจากระบบ
-                </button>
+                <button onclick="logout()" class="px-4 py-2 text-xs rounded-lg border border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">ออกจากระบบ</button>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-            <div class="glass-panel p-6 rounded-xl lg:col-span-1 border-l-4 border-l-amber-500">
-                <h2 class="text-lg font-medium mb-2 text-white">นำเข้าไฟล์ JVL RM</h2>
-                <p class="text-xs text-slate-400 mb-4">ระบบคัดกรองระดับ G,H,I หรือ 4,5 เข้าฐานข้อมูลอัตโนมัติ</p>
-                <div class="space-y-4">
-                    <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-amber-400 hover:file:bg-slate-700 cursor-pointer">
-                    <button onclick="processFile()" class="w-full py-2.5 text-xs rounded-lg btn-gold tracking-wide">
-                        ประมวลผลอุบัติการณ์ความเสี่ยง
-                    </button>
-                </div>
-            </div>
+        <div class="flex border-b border-slate-300 dark:border-slate-700 mb-6">
+            <button onclick="switchTab('dashboard')" id="tab-dashboard" class="nav-tab active px-6 py-3 text-sm font-medium transition-colors">Dashboard (ข้อมูลทั้งหมด)</button>
+            <button onclick="switchTab('keyin')" id="tab-keyin" class="nav-tab px-6 py-3 text-sm font-medium text-slate-500 dark:text-slate-400 transition-colors">คีย์ข้อมูล Manual Form</button>
+        </div>
 
-            <div class="glass-panel p-6 rounded-xl lg:col-span-3 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-lg font-medium mb-1 text-white">ตัวเลือกฟอร์มส่งออกผู้บริหารระดับสูง</h2>
-                    <p class="text-xs text-slate-400 mb-4">กำหนดขอบเขตข้อมูลที่ต้องการแปลงข้อมูลลงแบบฟอร์ม DCIRs</p>
-                    <div class="flex flex-wrap gap-6 mt-2">
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="radio" name="exportMode" value="all" checked class="w-4 h-4 accent-amber-500">
-                            <div>
-                                <span class="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">ส่งออกทุกรายการความเสี่ยง (แนะนำ)</span>
-                                <p class="text-xs text-slate-400">รายงานเหตุรุนแรงทั้งหมดเพื่อป้องกันความเสี่ยงเชิงรุก</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 cursor-pointer group">
-                            <input type="radio" name="exportMode" value="template" class="w-4 h-4 accent-amber-500">
-                            <div>
-                                <span class="text-sm font-medium text-slate-200 group-hover:text-amber-400 transition-colors">ส่งออกเฉพาะที่มีใน Template กรม</span>
-                                <p class="text-xs text-slate-400">คัดกรองเฉพาะหัวข้อหลักที่มีความเด่นชัดตามเอกสารชี้แจง</p>
-                            </div>
-                        </label>
+        <div id="view-dashboard" class="space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="panel-light dark:panel-dark p-6 rounded-xl border-l-4 border-l-amber-500">
+                    <h2 class="text-sm font-medium mb-2">นำเข้าไฟล์ JVL RM (GodReport)</h2>
+                    <input type="file" id="fileUpload" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 dark:text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:bg-slate-200 dark:file:bg-slate-700 file:text-slate-700 dark:file:text-amber-400 cursor-pointer mb-3">
+                    <button onclick="processFile()" class="w-full py-2 text-xs rounded btn-gold">ประมวลผลไฟล์</button>
+                </div>
+                <div class="panel-light dark:panel-dark p-6 rounded-xl lg:col-span-2 flex flex-col justify-center items-start">
+                    <h2 class="text-sm font-medium mb-3">จัดการข้อมูล (Data Management)</h2>
+                    <div class="flex gap-3">
+                        <button onclick="fetchDashboardData()" class="px-4 py-2 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">🔄 รีเฟรชข้อมูลล่าสุด</button>
+                        <button onclick="exportToExcel()" class="px-4 py-2 text-xs rounded bg-green-600 text-white hover:bg-green-700 shadow-lg">📊 Export to Excel</button>
                     </div>
                 </div>
-                <div class="text-xs text-slate-500 border-t border-slate-800 pt-3 mt-4 flex justify-between items-center">
-                    <span>Database ID: <span class="text-slate-400 font-mono">10PXoB...7QJZAI0</span></span>
-                    <span class="text-emerald-400 flex items-center gap-1">● ระบบเชื่อมต่อฐานข้อมูลโดยตรง</span>
+            </div>
+
+            <div class="panel-light dark:panel-dark rounded-xl overflow-hidden">
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="table-header-light dark:table-header-dark text-xs text-slate-600 dark:text-slate-400">
+                            <tr>
+                                <th class="py-3 px-4">เลขที่ใบความเสี่ยง</th>
+                                <th class="py-3 px-4">วันที่เกิดเหตุ</th>
+                                <th class="py-3 px-4">ระดับ</th>
+                                <th class="py-3 px-4">หมวดหมู่ DCIRs</th>
+                                <th class="py-3 px-4 max-w-xs">รายการ</th>
+                                <th class="py-3 px-4 text-center">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="incidentTableBody" class="divide-y divide-slate-200 dark:divide-slate-700/50">
+                            </tbody>
+                    </table>
                 </div>
             </div>
         </div>
 
-        <div class="glass-panel rounded-xl overflow-hidden shadow-2xl">
-            <div class="px-6 py-4 bg-slate-800/50 border-b border-slate-800 flex justify-between items-center">
-                <h3 class="text-sm font-semibold tracking-wider text-slate-300 uppercase">รายการติดตามอุบัติการณ์รุนแรงสะสม</h3>
-                <span id="rowCountTag" class="text-xs bg-amber-500/10 text-amber-400 px-2.5 py-1 rounded-full border border-amber-500/20 font-mono">0 รายการ</span>
+        <div id="view-keyin" class="hidden">
+            <form id="manual-form" onsubmit="submitManualForm(event)" class="panel-light dark:panel-dark rounded-xl p-6 md:p-8">
+                <h2 class="text-lg font-semibold mb-4 text-amber-600 dark:text-amber-400 border-b border-slate-200 dark:border-slate-700 pb-2">บันทึกข้อมูล DCIRs (Manual Key-in)</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">วันที่รายงาน</label>
+                        <input type="date" id="m_date" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">เวลา</label>
+                        <input type="time" id="m_time" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">เลขที่ใบความเสี่ยง (เว้นว่างเพื่อสร้างอัตโนมัติ)</label>
+                        <input type="text" id="m_riskId" placeholder="เช่น RM69-001" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">ระดับความรุนแรง</label>
+                        <select id="m_severity" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                            <option value="I">I</option><option value="H">H</option><option value="G">G</option><option value="5">5</option><option value="4">4</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">สถานที่ / หน่วยงานที่เกี่ยวข้อง</label>
+                        <input type="text" id="m_location" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">หมวดหมู่ DCIRs ตามกรม</label>
+                        <select id="m_category" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                            <option value="การฆ่าตัวตายในโรงพยาบาล">การฆ่าตัวตายในโรงพยาบาล</option>
+                            <option value="การทำร้ายร่างกายในโรงพยาบาล">การทำร้ายร่างกายในโรงพยาบาล</option>
+                            <option value="ความคลาดเคลื่อนทางยาที่รุนแรง">ความคลาดเคลื่อนทางยาที่รุนแรง</option>
+                            <option value="บุคลากรถูกทำร้ายร่างกายในที่ทำงาน">บุคลากรถูกทำร้ายร่างกายในที่ทำงาน</option>
+                            <option value="ผู้ป่วยนิติจิตเวชหลบหนีออกจากโรงพยาบาล">ผู้ป่วยนิติจิตเวชหลบหนีออกจากโรงพยาบาล</option>
+                            <option value="อื่นๆ (รอพิจารณา)">อื่นๆ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-medium mb-1">รายการเหตุการณ์ (สั้นๆ)</label>
+                        <input type="text" id="m_itemText" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">รายละเอียดเหตุการณ์</label>
+                        <textarea id="m_details" rows="3" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium mb-1">การแก้ไขเบื้องต้น</label>
+                        <textarea id="m_fix" rows="2" class="w-full px-3 py-2 rounded input-light dark:input-dark text-sm"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-2.5 rounded btn-gold text-sm tracking-wide">บันทึกข้อมูลเข้าสู่ฐานระบบ</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="pdf-wrapper" class="hidden">
+        <div id="pdf-content" style="width: 800px; padding: 40px; background: white; color: black; font-family: sans-serif;">
+            <div style="text-align: center; font-weight: bold; font-size: 18px; margin-bottom: 20px;">
+                แบบรายงานเหตุการณ์สำคัญเร่งด่วน (Sentinel Events)<br>
+                <span style="font-size: 14px; font-weight: normal;">Director Critical Information Requirements: Department of Mental Health</span>
             </div>
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-slate-800 text-xs font-semibold text-slate-400 tracking-wider bg-slate-900/40">
-                            <th class="py-4 px-5">เลขที่ใบความเสี่ยง</th>
-                            <th class="py-4 px-4">วันที่เกิดเหตุ</th>
-                            <th class="py-4 px-4">ระดับ</th>
-                            <th class="py-4 px-4">หมวดหมู่ DCIRs (วิเคราะห์อัตโนมัติ)</th>
-                            <th class="py-4 px-4">รายการบันทึก</th>
-                            <th class="py-4 px-4">ระยะเวลาตอบสนอง (SLA)</th>
-                            <th class="py-4 px-4 text-center">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="incidentTableBody" class="text-sm divide-y divide-slate-800/60 text-slate-300">
-                        <tr>
-                            <td colspan="7" class="text-center py-8 text-slate-500 text-xs">กำลังโหลดฐานข้อมูลความเสี่ยง...</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div style="font-size: 14px; margin-bottom: 20px; display: flex; justify-content: space-between;">
+                <span>วันที่รายงาน: <span id="pdf-date" style="border-bottom: 1px dotted black;">.....................</span></span>
+                <span>เวลา: <span id="pdf-time" style="border-bottom: 1px dotted black;">.................</span> น.</span>
+                <span>เลขที่อ้างอิง: <span id="pdf-id" style="border-bottom: 1px dotted black;">.................</span></span>
+            </div>
+            
+            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 1: ประเภทของเหตุการณ์</div>
+            <div style="font-size: 14px; margin-bottom: 20px;">
+                [ x ] <span id="pdf-category">......................................................</span><br>
+                <span style="color: #666; font-size: 12px;">* ประมวลผลจากระบบ Auto-Mapping</span>
+            </div>
+
+            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 2: รายละเอียดเหตุการณ์</div>
+            <div style="font-size: 14px; margin-bottom: 20px; line-height: 1.8;">
+                <b>สถานที่เกิดเหตุ:</b> <span id="pdf-location">.......................</span><br>
+                <b>รายการความเสี่ยง (ระดับ <span id="pdf-level">...</span>):</b> <span id="pdf-item">.......................</span><br>
+                <b>รายละเอียด:</b> <span id="pdf-details">.......................</span><br>
+                <b>การแก้ไขปัญหาเบื้องต้น:</b> <span id="pdf-fix">.......................</span>
+            </div>
+
+            <div style="font-weight: bold; margin-bottom: 10px; background: #f0f0f0; padding: 5px;">ส่วนที่ 6: สิ่งที่ต้องการขอรับการสนับสนุนจากผู้บริหาร</div>
+            <div style="font-size: 14px;">
+                [ x ] เพื่อทราบ <br>
+                [   ] พิจารณาสั่งการเพิ่มเติม
+            </div>
+            
+            <div style="margin-top: 50px; text-align: right; font-size: 14px;">
+                .......................................................<br>
+                พิมพ์ออกจากระบบ DCIRs
             </div>
         </div>
     </div>
 
     <script>
-        // บันทึก URL Web App ล่าสุดของคุณ
+        // *** ใส่ URL Web App อันใหม่ของโค้ดส่วนที่ 1 ที่นี่ ***
         const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbyF9h6ZlUuVRY3bn50cHwW-nnavH2eWQZp_Jd4y7T-YXgd3QtLWPLO7HVtBeZbwbaVBig/exec';
+        
         let authToken = sessionStorage.getItem('dcirs_token');
+        let currentData = []; // เก็บ Data ไว้สำหรับทำ Excel/PDF
+
+        // Theme Management
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const isDark = html.classList.contains('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateThemeIcon(isDark);
+        }
+        function updateThemeIcon(isDark) {
+            const icon = document.getElementById('theme-icon');
+            if(isDark) {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+            } else {
+                icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
+            }
+        }
 
         window.onload = () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+                updateThemeIcon(true);
+            }
             if (authToken) {
                 document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
+                document.getElementById('main-app').classList.remove('hidden');
                 fetchDashboardData();
             }
         };
 
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active', 'text-amber-600'));
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-keyin').classList.add('hidden');
+            
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            document.getElementById(`view-${tabName}`).classList.remove('hidden');
+            
+            if(tabName === 'dashboard') fetchDashboardData();
+        }
+
+        // Login Logic
         async function handleLogin(e) {
             e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
-
-            Swal.fire({ title: 'กำลังสอดส่องสิทธิ์เข้าถึง...', didOpen: () => { Swal.showLoading(); }});
+            Swal.fire({ title: 'ตรวจสอบสิทธิ์...', didOpen: () => Swal.showLoading() });
 
             try {
-                // แก้ปัญหา CORS ด้วยการส่งเป็น text/plain ไม่ระบุ Content-Type JSON
-                const response = await fetch(GAS_WEB_APP_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({ action: 'login', username: user, password: pass })
-                });
-                const result = await response.json();
-                
+                const res = await fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', username: user, password: pass }) });
+                const result = await res.json();
                 if (result.status === 'success') {
                     sessionStorage.setItem('dcirs_token', result.token);
                     authToken = result.token;
-                    Swal.fire({ icon: 'success', title: 'ยินดีต้อนรับเข้าสู่ระบบสำเร็จ', timer: 1000, showConfirmButton: false });
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1000, showConfirmButton: false });
                     document.getElementById('login-screen').classList.add('hidden');
-                    document.getElementById('dashboard-screen').classList.remove('hidden');
+                    document.getElementById('main-app').classList.remove('hidden');
                     fetchDashboardData();
-                } else {
-                    Swal.fire({ icon: 'error', title: 'การเข้าถึงปฏิเสธ', text: result.message });
-                }
-            } catch (err) {
-                Swal.fire({ icon: 'error', title: 'ล้มเหลว', text: 'ไม่สามารถติดต่อ Web App ตัวใหม่ได้ โปรดตรวจสอบการ Deploy' });
-            }
+                } else { Swal.fire('ล้มเหลว', result.message, 'error'); }
+            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อ Server', 'error'); }
         }
 
-        // ฟังก์ชันดึงข้อมูลจากหลังบ้านมาวาดตาราง Dashboard
+        function logout() { sessionStorage.removeItem('dcirs_token'); window.location.reload(); }
+
+        // Fetch & Render Dashboard
         async function fetchDashboardData() {
             try {
-                const response = await fetch(GAS_WEB_APP_URL);
-                const result = await response.json();
+                const res = await fetch(GAS_WEB_APP_URL);
+                const result = await res.json();
                 if (result.status === 'success') {
-                    renderTable(result.data);
+                    currentData = result.data; // Save for Export
+                    const tbody = document.getElementById('incidentTableBody');
+                    tbody.innerHTML = '';
+                    
+                    if(result.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-slate-500">ไม่พบข้อมูล</td></tr>'; return;
+                    }
+
+                    // Sort newest first
+                    [...result.data].reverse().forEach((row, i) => {
+                        let tr = document.createElement('tr');
+                        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30';
+                        tr.innerHTML = `
+                            <td class="py-3 px-4 font-mono text-xs text-amber-500">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
+                            <td class="py-3 px-4 text-xs">${row['วันที่เกิดเหตุ'] || '-'}</td>
+                            <td class="py-3 px-4 text-xs"><span class="px-2 py-1 rounded bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">${row['ระดับ'] || '-'}</span></td>
+                            <td class="py-3 px-4 text-xs">${row['DMHC'] || '-'}</td>
+                            <td class="py-3 px-4 text-xs max-w-[200px] truncate" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
+                            <td class="py-3 px-4 text-center">
+                                <button onclick="generatePDF(${result.data.length - 1 - i})" class="px-2 py-1 rounded text-xs bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">📄 PDF</button>
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
                 }
-            } catch (err) {
-                console.error("Error reading database:", err);
-            }
+            } catch (err) { console.error("Error loading table", err); }
         }
 
-        function renderTable(data) {
-            const tbody = document.getElementById('incidentTableBody');
-            document.getElementById('rowCountTag').innerText = `${data.length} รายการ`;
-            
-            if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-500 text-xs">ไม่พบอุบัติการณ์ความเสี่ยงระดับรุนแรงสะสมในระบบ</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = '';
-            data.forEach(row => {
-                // คำนวณเวลาผันผ่าน (SLA Tracking จาก วันที่เกิดเหตุ ถึง ปัจจุบัน)
-                let slaBadge = calculateSLABadge(row['วันที่เกิดเหตุ'], row['เวลา']);
-                let isTemplateSpecific = row['DMHC'] !== "อื่นๆ (รอผู้ดูแลระบบพิจารณา)";
-                
-                let tr = document.createElement('tr');
-                tr.className = `hover:bg-slate-800/30 transition-colors ${!isTemplateSpecific ? 'opacity-80' : ''}`;
-                tr.innerHTML = `
-                    <td class="py-3.5 px-5 font-mono text-xs text-amber-400 font-semibold">${row['เลขที่ใบความเสี่ยง'] || '-'}</td>
-                    <td class="py-3.5 px-4 text-xs">${row['วันที่เกิดเหตุ'] || '-'} ${row['เวลา'] || ''}</td>
-                    <td class="py-3.5 px-4"><span class="px-2 py-0.5 rounded text-xs bg-rose-500/20 text-rose-400 border border-rose-500/30 font-bold">${row['ระดับ'] || '-'}</span></td>
-                    <td class="py-3.5 px-4 text-xs font-medium ${isTemplateSpecific ? 'text-emerald-400' : 'text-slate-400'}">${row['DMHC'] || '-'}</td>
-                    <td class="py-3.5 px-4 text-xs max-w-xs truncate" title="${row['รายการ']}">${row['รายการ'] || '-'}</td>
-                    <td class="py-3.5 px-4 text-xs">${slaBadge}</td>
-                    <td class="py-3.5 px-4 text-center">
-                        <button onclick="exportSingleDCIR('${row['เลขที่ใบความเสี่ยง']}')" class="px-2.5 py-1 rounded bg-amber-500/10 hover:bg-amber-500 text-amber-400 hover:text-slate-900 border border-amber-500/30 text-xs font-medium transition-all">
-                            📄 ออกรายงาน
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
+        // Export Excel using SheetJS
+        function exportToExcel() {
+            if(currentData.length === 0) return Swal.fire('ไม่มีข้อมูล', 'ไม่พบข้อมูลสำหรับส่งออก', 'info');
+            const ws = XLSX.utils.json_to_sheet(currentData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "DCIRs");
+            XLSX.writeFile(wb, "DCIRs_Report.xlsx");
         }
 
-        function calculateSLABadge(thaiDateStr, timeStr) {
-            if(!thaiDateStr) return `<span class="text-slate-500">-</span>`;
-            try {
-                // จัดแปลงวันที่ข้อความ พ.ศ. ให้คอมพิวเตอร์เข้าใจ ค.ศ. เบื้องต้นเพื่อคำนวณชั่วโมงหยาบๆ
-                let cleanDate = thaiDateStr.replace("'", "").trim();
-                let parts = cleanDate.split('/');
-                if(parts.length !== 3) return `<span class="text-slate-400">รูปแบบวันที่พ.ศ.</span>`;
-                
-                let day = parseInt(parts[0]);
-                let month = parseInt(parts[1]) - 1;
-                let year = parseInt(parts[2]) - 543; // แปลงพ.ศ. เป็น ค.ศ. สำหรับคำนวณ
-                
-                let hour = 0, min = 0;
-                if(timeStr && timeStr.includes(':')) {
-                    let tParts = timeStr.split(':');
-                    hour = parseInt(tParts[0]);
-                    min = parseInt(tParts[1]);
-                }
-
-                let incidentDate = new Date(year, month, day, hour, min);
-                let diffMs = new Date() - incidentDate;
-                let diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                
-                if(diffHours < 0) return `<span class="text-slate-400">อนาคต/ไม่ระบุ</span>`;
-                if(diffHours <= 24) return `<span class="text-emerald-400 font-mono">⚡ ${diffHours} ชม. (ในเกณฑ์)</span>`;
-                return `<span class="text-amber-500 font-mono">⚠️ ${Math.floor(diffHours/24)} วัน ${diffHours%24} ชม.</span>`;
-            } catch (e) {
-                return `<span class="text-slate-500">คำนวณไม่ได้</span>`;
-            }
-        }
-
+        // Upload File Logic (Upsert)
         async function processFile() {
             const fileInput = document.getElementById('fileUpload');
-            if (!fileInput.files.length) {
-                return Swal.fire({ icon: 'warning', title: 'กรุณาเลือกไฟล์', text: 'โปรดแนบไฟล์ GodReport ก่อนดำเนินการ' });
-            }
-
-            const file = fileInput.files[0];
+            if (!fileInput.files.length) return Swal.fire('แจ้งเตือน', 'กรุณาเลือกไฟล์', 'warning');
             const reader = new FileReader();
-
             reader.onload = async function(e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const rawData = XLSX.utils.sheet_to_json(firstSheet);
-                
+                const rawData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 const targetSeverities = ['G', 'H', 'I', '4', '5'];
-                const filteredData = rawData.filter(row => {
-                    let lv = row['ระดับ'] || row['Level'] || row['ความรุนแรง'];
-                    return targetSeverities.includes(lv?.toString().toUpperCase().trim());
-                });
+                const filteredData = rawData.filter(r => targetSeverities.includes(r['ระดับ']?.toString().toUpperCase().trim()));
 
-                if (filteredData.length === 0) {
-                    return Swal.fire({ icon: 'info', title: 'ไม่พบข้อมูลที่ตรงเงื่อนไข', text: 'ไม่มีอุบัติการณ์ระดับ G, H, I, 4, 5 ในไฟล์ GodReport นี้' });
-                }
+                if (filteredData.length === 0) return Swal.fire('Info', 'ไม่มีข้อมูลระดับ G,H,I,4,5', 'info');
 
-                Swal.fire({ title: 'กำลังนำเข้าข้อมูลสู่ฐานข้อมูล...', text: `ตรวจพบข้อมูลเข้าข่ายความปลอดภัยความรุนแรง ${filteredData.length} รายการ`, didOpen: () => { Swal.showLoading(); }});
-
+                Swal.fire({ title: 'กำลังอัปโหลด...', didOpen: () => Swal.showLoading() });
                 try {
-                    // *** ถอดการส่งแบบ application/json เพื่อเลี่ยง OPTIONS Preflight Bug ***
-                    const response = await fetch(GAS_WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({ action: 'upsert', token: authToken, data: filteredData })
-                    });
-                    const result = await response.json();
-
+                    const res = await fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'upsert', token: authToken, data: filteredData }) });
+                    const result = await res.json();
                     if (result.status === 'success') {
-                        Swal.fire({ 
-                            icon: 'success', 
-                            title: 'อัปเดตระบบเรียบร้อย', 
-                            html: `เพิ่มข้อมูลความเสี่ยงใหม่: <b>${result.details.inserted}</b> รายการ<br>ปรับปรุงประวัติข้อมูลเดิม: <b>${result.details.updated}</b> รายการ` 
-                        });
-                        fileInput.value = "";
-                        fetchDashboardData(); // โหลดตารางใหม่ทันที
-                    } else {
-                        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาดจากฐานข้อมูล', text: result.message });
-                    }
-                } catch (err) {
-                    Swal.fire({ icon: 'error', title: 'การส่งข้อมูลขัดข้อง', text: 'ตรวจสอบสิทธิ์ Web App หรือการตั้งค่าแชร์ไฟล์ต้นฉบับ' });
-                }
+                        Swal.fire('สำเร็จ', `อัปเดตเรียบร้อย`, 'success');
+                        fileInput.value = ""; fetchDashboardData();
+                    } else { Swal.fire('Error', result.message, 'error'); }
+                } catch (err) { Swal.fire('Error', 'การส่งข้อมูลขัดข้อง', 'error'); }
+            };
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        }
+
+        // Manual Key-in Logic
+        async function submitManualForm(e) {
+            e.preventDefault();
+            const payload = {
+                incidentDate: document.getElementById('m_date').value,
+                incidentTime: document.getElementById('m_time').value,
+                riskId: document.getElementById('m_riskId').value,
+                severity: document.getElementById('m_severity').value,
+                location: document.getElementById('m_location').value,
+                dcirsCategory: document.getElementById('m_category').value,
+                itemText: document.getElementById('m_itemText').value,
+                details: document.getElementById('m_details').value,
+                initialFix: document.getElementById('m_fix').value
             };
 
-            reader.readAsArrayBuffer(file);
+            Swal.fire({ title: 'กำลังบันทึก...', didOpen: () => Swal.showLoading() });
+            try {
+                const res = await fetch(GAS_WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'key_in', token: authToken, data: payload }) });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    Swal.fire('สำเร็จ', 'บันทึกข้อมูลเรียบร้อย', 'success');
+                    document.getElementById('manual-form').reset();
+                } else { Swal.fire('Error', result.message, 'error'); }
+            } catch (err) { Swal.fire('Error', 'ไม่สามารถเชื่อมต่อได้', 'error'); }
         }
 
-        function exportSingleDCIR(riskId) {
-            const mode = document.querySelector('input[name="exportMode"]:checked').value;
-            Swal.fire({
-                icon: 'info',
-                title: 'กำลังสกัดฟอร์มรายงานกึ่งอัตโนมัติ',
-                text: `กำลังเตรียมออกเอกสารเลขที่ ${riskId} ในรูปแบบโหมด: ${mode === 'all' ? 'ส่งออกทั้งหมด' : 'ส่งออกเฉพาะกรอบเทมเพลต'}`,
-                timer: 2000,
-                showConfirmButton: false
+        // Export PDF using html2pdf
+        function generatePDF(index) {
+            const rowData = currentData[index];
+            
+            // Map data to hidden template
+            document.getElementById('pdf-date').innerText = rowData['วันที่เกิดเหตุ'] || '-';
+            document.getElementById('pdf-time').innerText = rowData['เวลา'] || '-';
+            document.getElementById('pdf-id').innerText = rowData['เลขที่ใบความเสี่ยง'] || '-';
+            document.getElementById('pdf-category').innerText = rowData['DMHC'] || 'อื่นๆ';
+            document.getElementById('pdf-location').innerText = rowData['สถานที่'] || '-';
+            document.getElementById('pdf-level').innerText = rowData['ระดับ'] || '-';
+            document.getElementById('pdf-item').innerText = rowData['รายการ'] || '-';
+            document.getElementById('pdf-details').innerText = rowData['รายละเอียด'] || '-';
+            document.getElementById('pdf-fix').innerText = rowData['การแก้ไขเบื้องต้น'] || '-';
+
+            const element = document.getElementById('pdf-content');
+            element.style.display = 'block'; // Make visible for render
+
+            const opt = {
+                margin:       10,
+                filename:     `DCIRs_${rowData['เลขที่ใบความเสี่ยง']}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            Swal.fire({ title: 'กำลังสร้าง PDF...', timer: 1500, didOpen: () => Swal.showLoading() });
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                element.style.display = 'none'; // Hide again
             });
-            // ขั้นถัดไปสามารถพัฒนาต่อยอดเชื่อมโยงฟังก์ชัน replaceText ของ Google Docs Template ได้จากส่วนนี้
-        }
-
-        function logout() {
-            sessionStorage.removeItem('dcirs_token');
-            window.location.reload();
         }
     </script>
 </body>
